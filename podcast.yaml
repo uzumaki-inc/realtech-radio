@@ -1,0 +1,10 @@
+title: "リアルテックラジオ"
+author: "UZUMAKI"
+email: "kudo@uzumaki-inc.jp"
+description: "エンジニアが普段何を考え、どんなことにワクワクしているのかを、非エンジニアの視点で紐解いていくラジオ。文系リスナーが社内のエンジニアの会話を理解できるように翻訳しつつ、エンジニアが共感できる学びのきっかけになるコンテンツです。"
+language: "ja"
+link: "https://podcast.uzumaki-inc.jp"
+feed_url: "https://podcast.uzumaki-inc.jp/feed.xml"
+image: "https://podcast.uzumaki-inc.jp/artwork.jpg"
+category: "Business"
+explicit: false

@@ -1,0 +1,59 @@
+name: Generate Feed and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'episodes/**'
+      - 'podcast.yaml'
+      - 'scripts/generate_feed.py'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+
+      - name: Generate RSS feed
+        run: |
+          python scripts/generate_feed.py
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit feed.xml
+        run: |
+          git add site/feed.xml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: regenerate feed.xml [skip ci]"
+          fi
+
+      - name: Push changes
+        run: |
+          git push origin main
+
+      - name: Deploy to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: 'site/'
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

@@ -1,0 +1,15 @@
+# Generated files
+site/feed.xml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
