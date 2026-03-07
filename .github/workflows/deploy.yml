@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -38,24 +38,6 @@ jobs:
       - name: Generate RSS feed
         run: |
           python scripts/generate_feed.py
-
-      - name: Configure Git
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
-      - name: Commit feed.xml
-        run: |
-          git add site/feed.xml
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: regenerate feed.xml [skip ci]"
-          fi
-
-      - name: Push changes
-        run: |
-          git push origin main
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
