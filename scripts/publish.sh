@@ -2,7 +2,7 @@
 
 # リアルテックラジオ 新エピソード公開スクリプト
 # Usage: ./scripts/publish.sh <episode_number> <m4a_file_path>
-# Example: ./scripts/publish.sh 002 ~/Downloads/realtech_radio_2.m4a
+# Example: ./scripts/publish.sh 0002 ~/Downloads/realtech_radio_2.m4a
 
 set -e
 
@@ -16,7 +16,7 @@ PROFILE="r2"
 # === 引数チェック ===
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <episode_number> <m4a_file>"
-  echo "Example: $0 002 ~/Downloads/realtech_radio_2.m4a"
+  echo "Example: $0 0002 ~/Downloads/realtech_radio_2.m4a"
   exit 1
 fi
 
@@ -74,30 +74,25 @@ EOF
 cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
 ## 番組概要
 
-（ここに概要を書いてください）
+<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
 
 ## 今回のポイント
 
+<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
 -
 -
 -
-
-## 今回の放送
-
-（文字起こしをもとに内容を書いてください）
-
----
 
 ## クレジット
 
 - 工藤：株式会社UZUMAKI 代表取締役 ／ X([@ToraDady](https://x.com/ToraDady))
-- ハッシー：X([@chrhsmt](https://x.com/chrhsmt))
-- ダイソン：X([@daidai3110](https://x.com/daidai3110))
+- <!-- TODO: 登壇者を手入力 -->
 
 制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
 
 ## リンク
 
+<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
 -
 SHOWNOTES
 
@@ -111,11 +106,17 @@ echo ""
 echo "1. 文字起こしを確認："
 echo "   open \"$TRANSCRIPT_FILE\""
 echo ""
-echo "2. 以下のファイルを編集（手動）："
-echo "   $EPISODE_DIR/meta.yaml  → title / duration / description を記入"
-echo "   $EPISODE_DIR/shownotes.md → 番組内容を記入"
+echo "2. 文字起こしをClaudeに貼り付けて以下を生成："
+echo "   - 番組概要"
+echo "   - 今回のポイント"
+echo "   - リンク"
+echo "   → $EPISODE_DIR/shownotes.md に貼り付ける"
 echo ""
-echo "3. 編集が終わったら："
+echo "3. 手入力で記入："
+echo "   - $EPISODE_DIR/meta.yaml  → title / duration / description"
+echo "   - $EPISODE_DIR/shownotes.md → クレジットの登壇者（工藤以外）"
+echo ""
+echo "4. 編集が終わったら："
 echo "   git add $EPISODE_DIR"
 echo "   git commit -m \"ep$EPISODE_NUM: publish\""
 echo "   git push"
