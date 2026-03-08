@@ -1,14 +1,12 @@
 title: "声でPC操作！でも落とし穴は？音声認識サービスの裏側"
-date: 2026-02-18  # 収録日（ファイル名 realtech_radio_1_20260218 より）
-duration: "00:34:31"  # 実測: 2070.87秒
+date: 2026-02-18
+duration: "00:34:31"
 audio_url: "https://<ACCOUNT_ID>.r2.cloudflarestorage.com/episodes/001.mp3"
-file_size: 0  # R2にmp3をアップロード後に実測値を記入
-description: "音声認識でPCを操作するサービスの裏側を、エンジニアの視点から深掘りします。便利さの裏にある技術的な落とし穴とは？"
+file_size: 33558967
+description: "音声入力が当たり前になってきた今、気になるのはその「裏側」。Super Whisper、Aqua Voice、Typelessと渡り歩いた工藤が、便利さの裏に潜むアクセス権限の罠に気づく。アクセシビリティ許可って何をOKしてるの？エンジニアのハッシー・ダイソンと一緒に「信頼できるサービスの見極め方」を考えます。"
 explicit: false
 
 # --- 公開前チェックリスト ---
-# [ ] audio_url の <ACCOUNT_ID> を実際のCloudflare Account IDに置換
-# [ ] 音声ファイルをmp3に変換してR2にアップロード
-# [ ] file_size をアップロード後のmp3ファイルサイズ（バイト数）に更新
-# [ ] date を公開日に変更（収録日 vs 公開日 どちらにするか決定）
-# [ ] title / description を文字起こし内容に基づいて最終調整
+# [x] audio_url の <ACCOUNT_ID> を実際のCloudflare Account IDに置換
+# [x] file_size をアップロード後のmp3ファイルサイズ（バイト数）に更新（wc -c で確認）
+# [ ] date を公開日に変更する場合は更新（現在は収録日）
