@@ -1,7 +1,7 @@
 title: "声でPC操作！でも落とし穴は？音声認識サービスの裏側"
 date: 2026-02-18
 duration: "00:34:31"
-audio_url: "https://<ACCOUNT_ID>.r2.cloudflarestorage.com/episodes/001.mp3"
+audio_url: "https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/001.mp3"
 file_size: 33558967
 description: "音声入力が当たり前になってきた今、気になるのはその「裏側」。Super Whisper、Aqua Voice、Typelessと渡り歩いた工藤が、便利さの裏に潜むアクセス権限の罠に気づく。アクセシビリティ許可って何をOKしてるの？エンジニアのハッシー・ダイソンと一緒に「信頼できるサービスの見極め方」を考えます。"
 explicit: false
