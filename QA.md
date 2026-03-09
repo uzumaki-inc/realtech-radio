@@ -69,6 +69,43 @@ R2はS3互換APIなので、AWS CLIやSDKがそのまま使える。
 
 ---
 
+## R2 APIトークンについて
+
+### Q: Account API TokenとUser API Tokenの違いは？
+
+**A:** Cloudflareのトークン作成画面では2種類が選べる。
+
+- **Account API Token（推奨）**: チーム・組織に紐づくトークン。アカウントから離脱しても消えない。本番運用向け
+- **User API Token**: 個人ユーザーに紐づく。ユーザーがアカウントを離れると無効になる可能性がある。開発・検証用途向け
+
+Podcastの継続的な運用では **Account API Token** を使う。今回作成した `realtech-radio-upload` もAccount API Token。
+
+### Q: Endpoint URLとは何か？どこで確認する？
+
+**A:** R2にS3互換APIでアクセスするためのURL。形式は：
+
+```
+https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+```
+
+Account IDは既知（`<ACCOUNT_ID>`）なので、実際のEndpoint URLは：
+
+```
+https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+```
+
+トークン作成後の確認画面にも表示されるが、コピー不要（Account IDから組み立て可能）。
+
+### Q: AWS CLIはAWSのアカウントなしで使える？
+
+**A:** 全く問題ない。AWS CLIは「ツール（コマンド）の名前」であり、AWSのアカウントは不要。`aws configure` で入力するAccess Key IDとSecret Access KeyもAWSのものではなく、Cloudflareで作成したR2トークンを使う。`--endpoint-url` でR2のエンドポイントを指定することで、AWSには一切アクセスせずCloudflare R2にファイルを送ることができる。
+
+### Q: R2のアップロードになぜAWS CLIを使う？
+
+**A:** Cloudflare R2はAWSのS3と互換性のあるAPIを持っているため、S3向けに作られたツールがそのまま動く。AWS CLIはドキュメントが豊富で枯れており、`brew install awscli` で簡単にインストールできる。RustやGoで書かれたR2専用CLIツール（`rclone`など）もあるが、AWS CLIが最も一般的でトラブル情報も多い。
+
+---
+
 ## R2の設定について
 
 ### Q: R2バケット名は何がいい？
@@ -78,6 +115,22 @@ R2はS3互換APIなので、AWS CLIやSDKがそのまま使える。
 - Podcast名「リアルテックラジオ」を英語化した識別子
 - 音声ファイル用という意図が明確
 - 将来的に `realtech-radio-video` など別リソースを追加しやすい
+
+### Q: R2のURLが2種類あるが何が違う？
+
+**A:** 用途が全く異なる2種類のURLが存在する。
+
+| URL形式 | 用途 | 認証 |
+|---|---|---|
+| `https://<ACCOUNT_ID>.r2.cloudflarestorage.com/...` | S3互換API（AWS CLIでのアップロードなど） | 必須（APIトークン） |
+| `https://pub-xxxxx.r2.dev/...` | 公開アクセス（リスナーが音声を再生） | 不要 |
+
+`meta.yaml` の `audio_url` には **`pub-xxxxx.r2.dev`** 形式を使う必要がある。S3 APIのURLをRSSフィードに書いても、リスナーのPodcastアプリが「403 Authorization」エラーになる。
+
+公開URLはバケットの「Settings」タブ → 「Public access」セクションで確認できる。リアルテックラジオの公開URLは：
+```
+https://pub-2723121c04be418c8520405cedf4afee.r2.dev
+```
 
 ### Q: パブリックアクセスを有効化するとはどういう意味？なぜ必要？
 
