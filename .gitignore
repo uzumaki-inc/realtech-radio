@@ -9,6 +9,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Python
 __pycache__/
 *.pyc
