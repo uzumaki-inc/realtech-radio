@@ -1,7 +1,6 @@
 # リアルテックラジオ プロジェクトコンテキスト
 
-このファイルはClaude Coworkで作業を引き継ぐためのコンテキストです。
-新しいPCやセッションで作業を開始するときに、このファイルを読み込ませてください。
+Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテキストです。
 
 ---
 
@@ -36,24 +35,27 @@
 ## リポジトリ構成
 
 ```
-20260308 podcast/
-├── CONTEXT.md          ← このファイル
-├── OPERATION.md        ← 運用手順書（エピソード公開フロー）
+realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
+├── CLAUDE.md                ← このファイル
+├── OPERATION.md             ← 運用手順書（エピソード公開フロー）
 ├── UPLOAD_AND_PUBLISH.md
 ├── DOMAIN_SETUP.md
-├── QA.md               ← セットアップQ&A集
+├── QA.md                    ← セットアップQ&A集
 ├── RSS_FLOW.md
 ├── README.md
-├── podcast.yaml        ← 番組全体の設定
+├── podcast.yaml             ← 番組全体の設定
 ├── episodes/
-│   └── 0001/           ← エピソードは4桁ゼロ埋め
+│   ├── 0001/                ← エピソードは4桁ゼロ埋め
+│   │   ├── meta.yaml
+│   │   └── shownotes.md
+│   └── 0002/
 │       ├── meta.yaml
 │       └── shownotes.md
 ├── scripts/
-│   ├── publish.sh      ← 新エピソード公開の自動化スクリプト
+│   ├── publish.sh           ← 新エピソード公開の自動化スクリプト
 │   ├── generate_feed.py
 │   └── requirements.txt
-└── site/               ← GitHub Actionsが自動生成（触らない）
+└── site/                    ← GitHub Actionsが自動生成（触らない）
 ```
 
 ---
@@ -86,16 +88,17 @@
 
 ---
 
-## 現在の状態（2026-03-09時点）
+## 現在の状態（2026-03-28時点）
 
 - [x] GitHub Actions + GitHub Pages セットアップ完了
 - [x] Cloudflare R2 バケット作成・公開設定完了
 - [x] podcast.uzumaki-inc.jp ドメイン設定完了
 - [x] ep0001 音声アップロード・公開完了
 - [x] Spotify 登録完了（審査通過済み）
-- [x] Apple Podcasts 登録・申請完了（審査中）
+- [x] Apple Podcasts 登録・申請完了
 - [x] 運用スクリプト（publish.sh）作成完了
-- [ ] ep0002 以降のエピソード公開（次回作業）
+- [x] ep0002 公開完了（2026-03-28）
+- [ ] ep0003 以降のエピソード公開（次回作業）
 
 ---
 
@@ -104,7 +107,7 @@
 - **AWS CLI**: `brew install awscli` でインストール済み（v2.34.4）
 - **Whisper**: `~/Library/Python/3.9/bin/whisper`（PATHに要追加）
 - **ffmpeg**: Homebrewでインストール済み
-- **リポジトリの場所**: このフォルダ（`20260308 podcast/`）がGitリポジトリ
+- **リポジトリの場所**: `~/src/realtech-radio`（GitHub: uzumaki-inc/realtech-radio）
 
 ### 新しいMacで環境を作る場合
 
@@ -135,4 +138,4 @@ export PATH="$HOME/Library/Python/3.9/bin:$PATH"
 - プロジェクトマネージャーとして振る舞い、作業を一緒に進めるスタイルを好む
 - ドキュメントはリアルタイムで更新する（作業中に発見したことをすぐ反映）
 - Q&A（`QA.md`）は疑問が出たらその都度追記する
-- 次回の作業は第2回エピソード（`0002`）の公開から
+- 次回の作業は第3回エピソード（`0003`）の公開から
