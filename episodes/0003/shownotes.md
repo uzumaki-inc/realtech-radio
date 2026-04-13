@@ -70,7 +70,7 @@
 ---
 
 - 工藤：株式会社UZUMAKI 代表取締役 ／ [X（@ToraDady）](https://x.com/ToraDady)
-- きのぴー
+- きのぴー：[X（@sseze）](https://x.com/sseze)
 - 岸：[X（@kefi3104）](https://x.com/kefi3104)
 - 永平：[X（@kazukinagahira）](https://x.com/kazukinagahira)
 - [Pony.ai](https://pony.ai)
