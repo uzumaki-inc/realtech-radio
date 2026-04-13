@@ -88,7 +88,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 
 ---
 
-## 現在の状態（2026-03-28時点）
+## 現在の状態（2026-04-13時点）
 
 - [x] GitHub Actions + GitHub Pages セットアップ完了
 - [x] Cloudflare R2 バケット作成・公開設定完了
@@ -98,7 +98,8 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 - [x] Apple Podcasts 登録・申請完了
 - [x] 運用スクリプト（publish.sh）作成完了
 - [x] ep0002 公開完了（2026-03-28）
-- [ ] ep0003 以降のエピソード公開（次回作業）
+- [x] ep0003 公開完了（2026-04-13、収録日 2026-04-11）
+- [ ] ep0004 以降のエピソード公開（次回作業）
 
 ---
 
