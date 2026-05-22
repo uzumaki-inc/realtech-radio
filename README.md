@@ -20,7 +20,7 @@
 ## 配信先
 
 - RSS: https://podcast.uzumaki-inc.jp/feed.xml
-- Spotify: https://open.spotify.com/show/0MBHbtyvPf47oPxBi
+- Spotify: https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p
 - Apple Podcasts: https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088
 
 ## 技術構成

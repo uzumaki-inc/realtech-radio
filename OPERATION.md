@@ -111,7 +111,7 @@ git push
 |---|---|
 | RSSフィード | https://podcast.uzumaki-inc.jp/feed.xml |
 | 音声ファイル（例）| https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0002.mp3 |
-| Spotify | https://open.spotify.com/show/0MBHbtyvPf47oPxBi |
+| Spotify | https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p |
 | Apple Podcasts | https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088 |
 
 ---

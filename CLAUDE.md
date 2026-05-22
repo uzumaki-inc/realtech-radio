@@ -19,7 +19,7 @@ Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテ�
 | RSSフィード | GitHub Pages | https://podcast.uzumaki-inc.jp/feed.xml |
 | 音声ホスティング | Cloudflare R2 | `realtech-radio-audio` バケット |
 | 音声公開URL | R2 Public URL | https://pub-2723121c04be418c8520405cedf4afee.r2.dev |
-| Spotify | Spotify for Creators | https://open.spotify.com/show/0MBHbtyvPf47oPxBi |
+| Spotify | Spotify for Creators | https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p |
 | Apple Podcasts | Apple Podcast Connect | https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088 |
 | ドメイン | Squarespace DNS → GitHub Pages | podcast.uzumaki-inc.jp |
 
