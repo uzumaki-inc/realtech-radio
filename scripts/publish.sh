@@ -7,8 +7,14 @@
 set -e
 
 # === 設定 ===
-BUCKET="realtech-radio-audio"
-R2_ENDPOINT="https://<ACCOUNT_ID>.r2.cloudflarestorage.com"
+# Cloudflare R2 のアカウント ID 等はリポジトリに含めない。
+# ~/.config/realtech-radio/config から読み込む（無ければエラーで停止）。
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/realtech-radio/config"
+[ -f "$CONFIG" ] && . "$CONFIG"
+: "${R2_ACCOUNT_ID:?$CONFIG に R2_ACCOUNT_ID を設定してください}"
+
+BUCKET="${R2_BUCKET:-realtech-radio-audio}"
+R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 PUBLIC_BASE_URL="https://pub-2723121c04be418c8520405cedf4afee.r2.dev"
 WHISPER_PATH="$HOME/Library/Python/3.9/bin/whisper"
 PROFILE="r2"
