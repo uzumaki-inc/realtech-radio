@@ -138,7 +138,7 @@ git push
 
 ### R2アップロードが失敗する
 
-APIトークン（`realtech-radio-upload`）の有効期限・権限を確認する。
+使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ バックオフィス共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
 
 Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
