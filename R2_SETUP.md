@@ -108,6 +108,44 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
    - 「Create API token」をクリック
    - Access Key ID と Secret Access Key を保存
 
+## バックオフィス共有用トークンの発行と受け渡し（管理者向け）
+
+配信作業をバックオフィスメンバーに共有する場合の手順です。
+
+### 専用トークンを発行する
+
+**既存のキー（`realtech-radio-upload` など自分用のトークン）は使い回さず、共有用に専用のトークンを発行します。**
+共有用トークンの更新・失効を、自分用のキーに影響を与えずに行えるようにするためです。
+
+作成手順は上の「[R2 API用の認証情報](#r2-api用の認証情報)」と同じ（トークン種別: S3 Compatible、権限: **Object Read & Write**）。以下の 2 点だけ変えます：
+
+- Token name: `realtech-radio-backoffice`（用途が分かる名前にする）
+- Specify bucket: **`realtech-radio-audio` のみ**に限定（「Apply to all buckets」にしない）
+
+表示された **Access Key ID / Secret Access Key** をメモします（この画面を離れると再表示不可）。
+
+### 1Password に登録する
+
+発行したキーは、共有 Vault に以下の内容で登録します：
+
+- **アイテム名**: `realtech-radio 配信用`
+- **登録する 4 点**: R2 Account ID ／ バケット名（`realtech-radio-audio`）／ Access Key ID ／ Secret Access Key
+- **メモ欄に書くこと**:
+  - 用途: `publish.sh` での音声アップロード用
+  - セットアップ手順: [ONBOARDING.md](./ONBOARDING.md) へのリンク
+
+メンバーには Vault 共有で渡し、Slack やメールでは送らない運用とします。
+
+### メンバーが離れるとき
+
+トークンは共有制のため、**失効だけでなく更新（ローテーション）までがセット**です。失効したまま放置すると、残りのメンバー全員の publish.sh が動かなくなります。
+
+1. 1Password の Vault 共有を解除する
+2. 共有トークンをローテーションする：
+   - Cloudflare → R2 → API Tokens → `realtech-radio-backoffice` を「Roll」（または Delete して再発行）
+   - 新しい Access Key ID / Secret Access Key を 1Password のアイテムに上書き登録する
+   - 残りのメンバーに `aws configure --profile r2` の再実行を依頼する（設定ファイルの変更は不要）
+
 ## 音声ファイルのアップロード方法
 
 ### 方法1: Cloudflare ダッシュボード（手動）

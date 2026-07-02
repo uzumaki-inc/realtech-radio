@@ -13,6 +13,8 @@
 
 `scripts/publish.sh` を使って半自動化されています。詳細は [OPERATION.md](./OPERATION.md) を参照してください。
 
+新メンバーのセットアップは [ONBOARDING.md](./ONBOARDING.md) を参照してください。
+
 ```bash
 ./scripts/publish.sh 0002 ~/Downloads/realtech_radio_2.m4a
 ```
