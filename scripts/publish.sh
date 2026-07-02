@@ -16,7 +16,7 @@ CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/realtech-radio/config"
 BUCKET="${R2_BUCKET:-realtech-radio-audio}"
 R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 PUBLIC_BASE_URL="https://pub-2723121c04be418c8520405cedf4afee.r2.dev"
-WHISPER_PATH="$HOME/Library/Python/3.9/bin/whisper"
+WHISPER_MODEL="large-v3"
 PROFILE="r2"
 
 # === 引数チェック ===
@@ -41,10 +41,17 @@ ffmpeg -i "$M4A_FILE" -codec:a libmp3lame -qscale:a 2 "$MP3_FILE" -y
 echo "✅ 変換完了: $MP3_FILE"
 echo ""
 
-# === Step 2: Whisper文字起こし ===
-echo "▶ Step 2/4: Whisperで文字起こし中（数分〜十数分かかります）..."
-$WHISPER_PATH "$MP3_FILE" --language ja --model medium --output_format txt --output_dir "$DOWNLOAD_DIR"
+# === Step 2: WhisperKit文字起こし ===
+echo "▶ Step 2/4: WhisperKit（$WHISPER_MODEL）で文字起こし中（初回はモデルDLで時間がかかります）..."
+whisperkit-cli transcribe \
+  --audio-path "$MP3_FILE" \
+  --model "$WHISPER_MODEL" \
+  --language ja \
+  --report \
+  --report-path "$DOWNLOAD_DIR"
+JSON_FILE="${MP3_FILE%.mp3}.json"
 TRANSCRIPT_FILE="${MP3_FILE%.mp3}.txt"
+jq -r '.text' "$JSON_FILE" > "$TRANSCRIPT_FILE"
 echo "✅ 文字起こし完了: $TRANSCRIPT_FILE"
 echo ""
 

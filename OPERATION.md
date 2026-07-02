@@ -51,7 +51,7 @@ cd ~/path/to/podcast-repo
 **スクリプトが自動でやること：**
 
 1. `m4a → mp3` に変換（ffmpeg）
-2. Whisperで日本語文字起こし → `~/Downloads/ファイル名.txt` に保存
+2. WhisperKit（large-v3）で日本語文字起こし → JSON レポート生成後、 `jq` で `.text` を抽出して `~/Downloads/ファイル名.txt` に保存
 3. mp3を R2 にアップロード（`episodes/0002.mp3`）
 4. `episodes/0002/meta.yaml` を作成（audio_url / file_size は自動入力）
 5. `episodes/0002/shownotes.md` のテンプレートを作成
@@ -118,13 +118,25 @@ git push
 
 ## トラブルシューティング
 
-### whisper コマンドが見つからない
+### whisperkit-cli コマンドが見つからない
 
 ```bash
-export PATH="$HOME/Library/Python/3.9/bin:$PATH"
+brew install whisperkit-cli
 ```
 
-`~/.zshrc` に上記を追加しておくと次回以降不要になる。
+Argmax 製の Swift native 実装（Apple Silicon の Neural Engine / Metal GPU を活用）。 旧 `openai-whisper`（pip 版、CPU 推論のみ）から移行済み。
+
+初回 transcribe 時に HuggingFace から CoreML モデルを自動 DL する（`large-v3` で数 GB）。 モデルは `~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/` 配下に cache される。
+
+### jq コマンドが見つからない
+
+macOS 15.x 以降は `/usr/bin/jq` が標準同梱。 古い macOS の場合は：
+
+```bash
+brew install jq
+```
+
+publish.sh は WhisperKit が生成する JSON レポートから `.text` フィールドを `jq` で抽出して txt を作る。
 
 ### aws コマンドが見つからない
 
