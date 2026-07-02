@@ -39,6 +39,8 @@
 
 ### 3. 音声ファイルをアップロードする
 
+> 💡 ツールの導入（awscli 等）とプロファイル設定は `./scripts/setup.sh` でまとめて行えます。
+
 ```bash
 # AWS CLIを使う（未インストールなら brew install awscli）
 brew install awscli

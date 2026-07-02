@@ -118,38 +118,23 @@ git push
 
 ## トラブルシューティング
 
-### whisperkit-cli コマンドが見つからない
+### whisperkit-cli / jq / aws / ffmpeg コマンドが見つからない
+
+セットアップスクリプトを実行する（未導入のものだけ入れてくれる）：
 
 ```bash
-brew install whisperkit-cli
+./scripts/setup.sh
 ```
 
-Argmax 製の Swift native 実装（Apple Silicon の Neural Engine / Metal GPU を活用）。 旧 `openai-whisper`（pip 版、CPU 推論のみ）から移行済み。
+> **WhisperKit について**: Argmax 製の Swift native 実装（Apple Silicon の Neural Engine / Metal GPU を活用）。 旧 `openai-whisper`（pip 版、CPU 推論のみ）から移行済み。 初回 transcribe 時に HuggingFace から CoreML モデルを自動 DL する（`large-v3` で数 GB）。 モデルは `~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/` 配下に cache される。
+>
+> **jq について**: macOS 15.x 以降は `/usr/bin/jq` が標準同梱。 publish.sh は WhisperKit が生成する JSON レポートから `.text` フィールドを `jq` で抽出して txt を作る。
 
-初回 transcribe 時に HuggingFace から CoreML モデルを自動 DL する（`large-v3` で数 GB）。 モデルは `~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/` 配下に cache される。
+急ぎで文字起こしを飛ばしたい場合は `--skip-transcribe` を付けて publish.sh を実行し、文字起こしは別マシン・別ツールで行う。
 
-### jq コマンドが見つからない
+### 設定ファイルが見つからないと言われる
 
-macOS 15.x 以降は `/usr/bin/jq` が標準同梱。 古い macOS の場合は：
-
-```bash
-brew install jq
-```
-
-publish.sh は WhisperKit が生成する JSON レポートから `.text` フィールドを `jq` で抽出して txt を作る。
-
-### aws コマンドが見つからない
-
-```bash
-brew install awscli
-aws configure --profile r2
-```
-
-configure で入力する内容：
-- Access Key ID: Cloudflareで作成した `realtech-radio-upload` トークンのAccess Key ID
-- Secret Access Key: 同上のSecret Access Key
-- Default region: `auto`
-- Output format: `json`
+`~/.config/realtech-radio/config` が必要。作り方は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」にある）。
 
 ### R2アップロードが失敗する
 

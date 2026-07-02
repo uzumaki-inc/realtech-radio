@@ -118,6 +118,8 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
 
 ### 方法2: AWS CLI（推奨・自動化向け）
 
+> 💡 ツールの導入とプロファイル設定は `./scripts/setup.sh` でまとめて行えます。
+
 AWS CLI をインストール後：
 
 ```bash
