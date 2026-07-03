@@ -142,9 +142,9 @@
 
   podcast.uzumaki-inc.jp/feed.xml
   ↑
-  これが「あなたの城」
+  これが「我々の城」
 
-  RSSのマスター = あなたのGitHubリポジトリ
+  RSSのマスター = 我々のGitHubリポジトリ
   ↓
   音声ファイル置き場を変更したい
     →  meta.yaml の audio_url を変えるだけ
