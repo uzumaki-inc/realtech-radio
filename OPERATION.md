@@ -53,14 +53,7 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 ### 3. Claude Code にエピソード公開を頼む
 
-ターミナルでリポジトリに移動して、Claude Code を起動する：
-
-```bash
-cd ~/src/realtech-radio
-claude
-```
-
-こう伝える（エピソード番号とファイルの場所は実際のものに置き換え）：
+**Claude デスクトップアプリ**を開き、「Code」タブでこのリポジトリ（`~/src/realtech-radio`）を選んで、こう伝える（エピソード番号とファイルの場所は実際のものに置き換え）：
 
 > ep0007 を公開したい。
 > 編集後の音声は ~/Downloads/○○○.m4a、動画は ~/Downloads/○○○.mp4、
@@ -77,8 +70,6 @@ claude
 push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更新される。Spotify・Apple Podcasts は次回のクロールで自動取得する（数時間以内）。
 
 > 💡 同じエピソード番号でやり直しても大丈夫です。記入済みの内容（`meta.yaml` の title / description、`shownotes.md` 全体）は守られ、音声を差し替えた場合は再生時間などの機械計算欄だけ新しい音声に合わせて自動更新されます。
-
-> Claude Code は、Claude デスクトップアプリの「Code」タブからも使えます。その場合はターミナルでの起動は不要で、Code タブでこのリポジトリ（`~/src/realtech-radio`）を開いて、同じように頼めばOKです。
 
 #### 参考：ターミナルで手動実行する場合
 
@@ -106,31 +97,23 @@ cd ~/src/realtech-radio
 
 ## トラブルシューティング
 
-### aws / ffmpeg / gh コマンドが見つからない
+### aws / ffmpeg / gh コマンドが見つからないと言われる
 
-セットアップスクリプトを実行する（未導入のものだけ入れてくれる）：
-
-```bash
-./scripts/setup.sh
-```
+Claude Code にそのまま「setup.sh を実行して」と頼めばOK（未導入のものだけ入れてくれる）。
 
 > **必要なツールは 3 つだけ**: `aws`（R2 へのアップロード）・`ffmpeg`（静止画切り出し・再生時間の自動計算）・`gh`（GitHub 認証）。いずれも setup.sh が自動で導入します。文字起こしは共有される VTT を使うため、WhisperKit などの文字起こしツールは不要です。
 
 ### 静止画を切り出さずに公開したい（音声のみの回）
 
-Claude Code に「動画はなし」と伝えるだけでOK。手動実行の場合は mp4 を渡さずに実行する：
-
-```bash
-./scripts/publish.sh 0007 ~/Downloads/（編集後の音声）.m4a
-```
+Claude Code に「動画はなし」と伝えるだけでOK。VTT だけでまとめを作れます。
 
 ### 設定ファイルが見つからないと言われる
 
-`~/.config/realtech-radio/config` が必要。作り方は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」にある）。
+初期設定（`~/.config/realtech-radio/config` の作成）がまだ終わっていません。[ONBOARDING.md](./ONBOARDING.md) の手順 4 をターミナルで行ってください（値は 1Password の「realtech-radio 配信用」にある。**Claude Code のチャットには貼らないこと**）。
 
 ### R2アップロードが失敗する
 
-使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
+エラーメッセージを Claude Code がそのまま読んで原因を教えてくれます。認証情報の期限切れが疑われる場合は配信者（管理者）に連絡してください。管理者は使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する：
 
 Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
