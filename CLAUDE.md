@@ -70,7 +70,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / duration / description を記入（手動）
-4. `shownotes.md` のクレジット登壇者（配信者以外）を記入（手動）
+4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
 5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
 6. `git push` → GitHub Actionsが feed.xml を自動更新
 

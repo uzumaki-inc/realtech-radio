@@ -131,21 +131,7 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
 - **アイテム名**: `realtech-radio 配信用`
 - **登録する 3 点**: R2 Account ID ／ Access Key ID ／ Secret Access Key
   - バケット名（`realtech-radio-audio`）は 1Password には入れない（publish.sh に標準値があるため不要）
-- **メモ欄に「コピペ一発で設定できる手順」を実際の値を埋めて書く**（編集者は ONBOARDING.md の手順 4 で、このメモをそのまま貼り付けて設定します）:
-
-  ```bash
-  # ① 設定ファイル（R2 Account ID を実値に）
-  mkdir -p ~/.config/realtech-radio
-  echo 'R2_ACCOUNT_ID="＜実際のR2 Account ID＞"' > ~/.config/realtech-radio/config
-  chmod 600 ~/.config/realtech-radio/config
-
-  # ② アップロード認証（Access Key ID / Secret を実値に）
-  aws configure set aws_access_key_id "＜実際のAccess Key ID＞" --profile r2
-  aws configure set aws_secret_access_key "＜実際のSecret Access Key＞" --profile r2
-  aws configure set region auto --profile r2
-  ```
-
-  - あわせて「用途: `publish.sh` での音声アップロード用」「詳しい流れ: ONBOARDING.md」も書いておく
+- **メモ欄**: 用途（`publish.sh` での音声アップロード用）と、セットアップ手順は [ONBOARDING.md](./ONBOARDING.md) を参照、と記載
 
 メンバーには Vault 共有で渡し、Slack やメールでは送らない運用とします。
 
