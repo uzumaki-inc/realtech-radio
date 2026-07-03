@@ -27,11 +27,23 @@ if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
   exit 1
 fi
 
+# エピソード番号は4桁ゼロ埋めに正規化する（例: 7 → 0007）
 EPISODE_NUM="$1"
+if [[ "$EPISODE_NUM" =~ ^[0-9]{1,4}$ ]]; then
+  EPISODE_NUM=$(printf '%04d' "$((10#$EPISODE_NUM))")
+else
+  echo "❌ エピソード番号は数字4桁までで指定してください（例: 0007）"
+  exit 1
+fi
+
 M4A_FILE="${2/#\~/$HOME}"          # ~ を展開
 MP4_FILE="${3:-}"
 MP4_FILE="${MP4_FILE/#\~/$HOME}"   # ~ を展開（未指定なら空のまま）
-EPISODE_DIR="episodes/$EPISODE_NUM"
+
+# どこから実行しても episodes/ がリポジトリ直下にできるよう、絶対パスで扱う
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+EPISODE_REL="episodes/$EPISODE_NUM"          # 表示用（読みやすい相対表記）
+EPISODE_DIR="$REPO_ROOT/$EPISODE_REL"
 DOWNLOAD_DIR=$(dirname "$M4A_FILE")
 FRAMES_DIR="$DOWNLOAD_DIR/realtech-frames-$EPISODE_NUM"
 
@@ -63,16 +75,19 @@ R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 command -v aws > /dev/null 2>&1 || die_setup "aws が見つかりません。"
 
-if ! aws configure list --profile "$PROFILE" > /dev/null 2>&1; then
+# プロファイルの存在だけでなく、Access Key が実際に登録されているかまで確認する
+if [ -z "$(aws configure get aws_access_key_id --profile "$PROFILE" 2>/dev/null)" ]; then
   die_setup "AWS CLI の $PROFILE プロファイルが未設定です。"
 fi
 
-if [ -n "$MP4_FILE" ]; then
-  if [ ! -f "$MP4_FILE" ]; then
-    echo "❌ mp4 ファイルが見つかりません: $MP4_FILE"
-    exit 1
-  fi
-  command -v ffmpeg > /dev/null 2>&1 || die_setup "ffmpeg が見つかりません。"
+# ffmpeg（静止画切り出し）と同梱の ffprobe（再生時間の自動計算）は常に必要
+if ! command -v ffmpeg > /dev/null 2>&1 || ! command -v ffprobe > /dev/null 2>&1; then
+  die_setup "ffmpeg が見つかりません。"
+fi
+
+if [ -n "$MP4_FILE" ] && [ ! -f "$MP4_FILE" ]; then
+  echo "❌ mp4 ファイルが見つかりません: $MP4_FILE"
+  exit 1
 fi
 
 echo "🎙️  エピソード $EPISODE_NUM の公開処理を開始します..."
@@ -111,19 +126,43 @@ mkdir -p "$EPISODE_DIR"
 FILE_SIZE=$(wc -c < "$M4A_FILE" | tr -d ' ')
 AUDIO_URL="$PUBLIC_BASE_URL/episodes/$EPISODE_NUM.m4a"
 
-# meta.yaml テンプレート作成
-cat > "$EPISODE_DIR/meta.yaml" << EOF
+# 再生時間（duration）を m4a から自動計算する（ffprobe は ffmpeg に同梱）
+DURATION="00:00:00"
+DURATION_SECS=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$M4A_FILE" 2>/dev/null | cut -d. -f1)
+if [[ "$DURATION_SECS" =~ ^[0-9]+$ ]]; then
+  DURATION=$(printf '%02d:%02d:%02d' \
+    $((DURATION_SECS / 3600)) $((DURATION_SECS % 3600 / 60)) $((DURATION_SECS % 60)))
+else
+  echo "⚠️  再生時間を自動計算できませんでした。meta.yaml の duration を手入力してください"
+fi
+
+# meta.yaml 作成。既にある場合は、人が記入する欄（title / description など）を守りつつ、
+# 音声の差し替えに備えて機械が計算する欄だけ今回の m4a に合わせて更新する
+if [ -f "$EPISODE_DIR/meta.yaml" ]; then
+  sed -i '' \
+    -e "s|^duration: .*|duration: \"$DURATION\"|" \
+    -e "s|^audio_url: .*|audio_url: \"$AUDIO_URL\"|" \
+    -e "s|^file_size: .*|file_size: $FILE_SIZE|" \
+    "$EPISODE_DIR/meta.yaml"
+  echo "⚠️  meta.yaml は既にあるため、記入済みの内容（title / description など）は保持しました"
+  echo "   （duration / audio_url / file_size は今回の音声に合わせて更新済み）"
+else
+  cat > "$EPISODE_DIR/meta.yaml" << EOF
 title: ""
 date: $(date +%Y-%m-%d)
-duration: "00:00:00"
+duration: "$DURATION"
 audio_url: "$AUDIO_URL"
 file_size: $FILE_SIZE
 description: ""
 explicit: false
 EOF
+fi
 
-# shownotes.md テンプレート作成
-cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
+# shownotes.md テンプレート作成（丸ごと人が記入するファイルなので、既にあれば上書きしない）
+if [ -f "$EPISODE_DIR/shownotes.md" ]; then
+  echo "⚠️  shownotes.md は既にあるため上書きしません（記入済みの内容を守るため）"
+else
+  cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
 ## 番組概要
 
 <!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
@@ -147,6 +186,7 @@ cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
 <!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
 -
 SHOWNOTES
+fi
 
 echo "✅ ファイル作成完了"
 echo ""
@@ -161,21 +201,19 @@ if [ -n "$MP4_FILE" ]; then
   echo "   あわせて切り出した静止画（$FRAMES_DIR）も渡すと、"
   echo "   画面の情報も踏まえた精度の高いまとめになります。"
 fi
-echo "   → 生成結果を $EPISODE_DIR/shownotes.md に貼り付ける"
+echo "   → 生成結果を $EPISODE_REL/shownotes.md に貼り付ける"
 echo ""
-echo "2. 手入力で記入："
-echo "   - $EPISODE_DIR/meta.yaml  → title / duration / description"
-echo "   - $EPISODE_DIR/shownotes.md → クレジットの登壇者（工藤以外）"
+echo "2. 仕上げと公開は Claude Code に自然言語で頼めばOKです。たとえば："
 echo ""
-echo "3. 編集が終わったら："
-echo "   git add $EPISODE_DIR"
-echo "   git commit -m \"ep$EPISODE_NUM: publish\""
-echo "   git push"
+echo "   「ep$EPISODE_NUM を公開したい。タイトルは「〇〇」、登壇者は〇〇。"
+echo "     meta.yaml と shownotes を仕上げて、コミットして push して」"
 echo ""
-echo "→ GitHub Actionsが自動起動してfeed.xmlが更新されます"
+echo "   （足りない情報は Claude Code のほうから聞いてくれます）"
+echo ""
+echo "→ push されると GitHub Actions が自動起動して feed.xml が更新されます"
 if [ -n "$MP4_FILE" ]; then
   echo ""
-  echo "4. まとめが終わったら、切り出した静止画をローカルから削除してください"
+  echo "3. まとめが終わったら、切り出した静止画をローカルから削除してください"
   echo "   （PCにノイズを溜めないため）："
   echo "   rm -rf \"$FRAMES_DIR\""
 fi

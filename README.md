@@ -2,30 +2,36 @@
 
 エンジニアが普段何を考え、どんなことにワクワクしているのかを、非エンジニアの視点で紐解いていくラジオ。UZUMAKI, Inc. が運営しています。
 
-## 構成
+## 🎧 番組を聴きたい方
 
-- `podcast.yaml` - Podcast 全体の設定（番組名・著者・説明文など）
-- `episodes/` - エピソードごとのメタデータとショーノート（4桁ゼロ埋め: `0001/`, `0002/`...）
-- `scripts/` - RSS フィード生成スクリプト・公開自動化スクリプト
-- `site/` - GitHub Pages に公開されるファイル（自動生成）
+- **Spotify**: https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p
+- **Apple Podcasts**: https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088
+- **RSS フィード**: https://podcast.uzumaki-inc.jp/feed.xml
 
-## 新しいエピソードの公開方法
+各エピソードの詳細（ショーノート）は [`episodes/`](./episodes/) 配下にあります。これより下は番組運営用の資料です。
 
-`scripts/publish.sh` を使って半自動化されています。詳細は [OPERATION.md](./OPERATION.md) を参照してください。
+## ✍️ 編集者の方（エピソード公開を担当する方）
 
-新メンバーのセットアップは [ONBOARDING.md](./ONBOARDING.md) を参照してください。
+読むのは次の 2 つだけで大丈夫です：
 
-```bash
-./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
-```
+1. **[ONBOARDING.md](./ONBOARDING.md)** — 初回のセットアップ（作業に加わるとき最初に 1 回だけ）
+2. **[OPERATION.md](./OPERATION.md)** — 普段のエピソード公開手順
 
-（音声の m4a を R2 にアップロードし、mp4 から 10 秒ごとに静止画を切り出します。文字起こしは共有される話者分離済み VTT を使います。）
+どちらも非エンジニア向けに書かれており、作業の多くは Claude Code に頼めます。
 
-## 配信先
+## 🔧 管理者の方（配信基盤を管理するエンジニア）
 
-- RSS: https://podcast.uzumaki-inc.jp/feed.xml
-- Spotify: https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p
-- Apple Podcasts: https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088
+- **[R2_SETUP.md](./R2_SETUP.md)** — Cloudflare R2 の構築と、編集者用トークンの発行・ローテーション
+- **[RSS_FLOW.md](./RSS_FLOW.md)** — RSS フィードが自動生成・配信される仕組みの技術解説
+- **[QA.md](./QA.md)** — 配信基盤の設計判断 Q&A（なぜこの構成にしたか）
+- **[CLAUDE.md](./CLAUDE.md)** — Claude Code 用のプロジェクトコンテキスト（基盤の設定値の早見表としても使えます）
+
+## リポジトリ構成
+
+- `podcast.yaml` — Podcast 全体の設定（番組名・著者・説明文など）
+- `episodes/` — エピソードごとのメタデータとショーノート（4桁ゼロ埋め: `0001/`, `0002/`...）
+- `scripts/` — セットアップ（`setup.sh`）・公開自動化（`publish.sh`）・RSS フィード生成（`generate_feed.py`）
+- `site/` — GitHub Pages に公開されるファイル（GitHub Actions が自動生成。手で触らない）
 
 ## 技術構成
 

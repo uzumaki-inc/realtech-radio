@@ -49,11 +49,13 @@ cd realtech-radio
 
 > git が入っていない場合は、初回にインストールを促すダイアログが出るので「インストール」を選んでください。**インストールが終わったら、`git clone` の行からもう一度実行してください**（最初の実行は中断されています）。
 
+> 💡 **ここから先の手順は Claude Code に代行してもらえます。**「ONBOARDING.md に沿ってセットアップして」と頼めば、コマンドの実行やエラーの解決を手伝ってくれます。**ただし 1Password の値（手順 4 で貼り付けるコマンド）は、Claude Code とのチャットには貼らず、ターミナルに直接貼り付けてください**（チャット履歴に秘密情報を残さないため）。
+
 ---
 
 ## 3. セットアップスクリプトを実行する
 
-必要な道具（静止画の切り出し・アップロードのツール）をまとめて整えます：
+必要な道具（静止画の切り出し・アップロード・GitHub 認証のツール）をまとめて導入し、設定の状態を確認します：
 
 ```bash
 ./scripts/setup.sh
@@ -61,7 +63,7 @@ cd realtech-radio
 
 - 何度実行しても安全です（導入済みのものはスキップされます）
 - 「Homebrew が見つかりません」と表示されて止まった場合は、案内される公式ページ（https://brew.sh/ja/）の手順で Homebrew をインストールし、**ターミナルを開き直して `cd ~/src/realtech-radio` してから**もう一度実行してください
-- 最後に残りの作業の一覧が表示されたら、次のステップに進んでください
+- 最後に「あと少しです！」と残りの作業の一覧が表示されたら、次のステップに進んでください。**表示された項目だけ対応すればOKです**（道具の導入はスクリプトが済ませています）
 
 ---
 
@@ -83,36 +85,29 @@ cat ~/.config/realtech-radio/config
 
 こちらも 1Password の「realtech-radio 配信用」に、**コピペ一発で設定できる手順**（`aws configure set` で Access Key ID / Secret Access Key を登録するコマンド）が書いてあります。そのメモを参照して、ターミナルに貼り付けて実行してください。
 
-### 4-3. GitHub の認証を設定する（git push 用）
+### 4-3. GitHub にログインする（git push 用）
 
-エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。
-
-編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので、自分の GitHub アカウントでログインすれば、そのまま push できます（フォークや Pull Request は不要です）。手順 1 の招待（Accept 済み）を確認してから：
+エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。必要なツール（`gh`）は手順 3 のスクリプトが導入済みなので、ログインだけ行います：
 
 ```bash
-brew install gh
 gh auth login
 ```
 
-質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。自分の GitHub アカウントでログインしてください（Write ロールが付いているので、このリポジトリへ直接 push できます）。
+質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。**自分の GitHub アカウント**でログインしてください。
+
+> 編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので（手順 1 の招待を Accept 済みであること）、ログインすればそのまま push できます。フォークや Pull Request は不要です。
 
 ---
 
 ## 5. 動作確認
 
-もう一度セットアップスクリプトを実行して、すべて ✅ になる（完了メッセージが出る）ことを確認します：
+もう一度セットアップスクリプトを実行します。R2 に実際につながるかの確認まで、スクリプトが自動で行います：
 
 ```bash
 ./scripts/setup.sh
 ```
 
-続いて、R2 に実際につながるかを確認します。次の 1 行を**そのまま**ターミナルに貼り付けて実行してください（書き換え不要）：
-
-```bash
-. ~/.config/realtech-radio/config && aws s3 ls "s3://${R2_BUCKET:-realtech-radio-audio}/episodes/" --profile r2 --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-```
-
-エピソードの音声ファイルの一覧が表示されれば、準備完了です 🎉
-エラーが出る場合は、手順 4 の設定値（Account ID / Access Key / Secret）を 1Password と見比べて見直してください。
+「🎉 セットアップは完了しています！」と表示されれば、準備完了です 🎉
+⚠️ が残っている場合は、その場に表示される案内に沿って対応し、もう一度実行してください。
 
 エピソードの公開手順は [OPERATION.md](./OPERATION.md) を参照してください。

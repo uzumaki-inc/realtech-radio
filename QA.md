@@ -1,6 +1,8 @@
 # リアルテックラジオ 配信基盤 Q&A
 
-セットアップ中に出てきた疑問と回答をまとめたドキュメントです。
+配信基盤のセットアップ中に出てきた疑問と回答（なぜこの構成にしたか）をまとめたドキュメントです。
+
+**対象**: 配信基盤を管理するエンジニア（管理者）。編集者のセットアップの疑問は [ONBOARDING.md](./ONBOARDING.md) を参照してください。
 
 ---
 
@@ -82,19 +84,13 @@ Podcastの継続的な運用では **Account API Token** を使う。今回作�
 
 ### Q: Endpoint URLとは何か？どこで確認する？
 
-**A:** R2にS3互換APIでアクセスするためのURL。形式は：
+**A:** R2にS3互換APIでアクセスするためのURL。Account ID（1Password の「realtech-radio 配信用」にある）から次の形式で組み立てられる：
 
 ```
 https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 ```
 
-Account IDは既知（`<ACCOUNT_ID>`）なので、実際のEndpoint URLは：
-
-```
-https://<ACCOUNT_ID>.r2.cloudflarestorage.com
-```
-
-トークン作成後の確認画面にも表示されるが、コピー不要（Account IDから組み立て可能）。
+トークン作成後の確認画面にも表示されるが、覚える必要はない。`publish.sh` と `setup.sh` は設定ファイル（`~/.config/realtech-radio/config`）の `R2_ACCOUNT_ID` から自動で組み立てるため、通常は意識不要。
 
 ### Q: AWS CLIはAWSのアカウントなしで使える？
 
@@ -102,7 +98,7 @@ https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 
 ### Q: R2のアップロードになぜAWS CLIを使う？
 
-**A:** Cloudflare R2はAWSのS3と互換性のあるAPIを持っているため、S3向けに作られたツールがそのまま動く。AWS CLIはドキュメントが豊富で枯れており、`brew install awscli` で簡単にインストールできる。RustやGoで書かれたR2専用CLIツール（`rclone`など）もあるが、AWS CLIが最も一般的でトラブル情報も多い。
+**A:** Cloudflare R2はAWSのS3と互換性のあるAPIを持っているため、S3向けに作られたツールがそのまま動く。AWS CLIはドキュメントが豊富で枯れており、`brew install awscli` で簡単にインストールできる。`rclone` などの汎用クラウドストレージツールでもR2にアクセスできるが、AWS CLIが最も一般的でトラブル情報も多い。
 
 ---
 
@@ -183,7 +179,7 @@ GitHub Actionsと組み合わせることで、push → RSS生成 → デプロ�
 - フォーマット: JPEG または PNG
 - ファイルサイズ: 500KB〜2MB程度
 
-Step 6（プラットフォーム登録）の前までに用意する必要がある。
+Spotify / Apple Podcasts へのプラットフォーム登録の前までに用意する必要がある。
 
 ---
 
