@@ -10,8 +10,12 @@
 └─────────────────────────────────────────────────────────────────┘
 
 【あなたの作業】
+  収録音声 (.m4a) ──(publish.sh)──→ Cloudflare R2 にアップロード（音声本体の置き場所はここ）
+                                        └→ 公開URL（https://pub-....r2.dev/episodes/0007.m4a）を
+                                           meta.yaml の audio_url に自動記入
+
   episodes/0007/
-  ├── meta.yaml         ← 番組タイトル、公開日、音声URLなど（publish.sh が下書きを自動生成）
+  ├── meta.yaml         ← 番組タイトル、公開日、audio_url（= R2 の音声URL）など（publish.sh が下書きを自動生成）
   └── shownotes.md      ← ショーノート（説明文。Claude Code と仕上げる）
       ↓
    git push
@@ -23,14 +27,15 @@
   meta.yaml + shownotes.md をパースして
   ↓
   site/feed.xml を生成
+  （<enclosure> は R2 上の音声URLを指すだけ。音声本体は GitHub Pages には載らない）
   ↓
-  GitHub Pages にデプロイ
+  GitHub Pages にデプロイ（= podcast.uzumaki-inc.jp/feed.xml）
       ↓
 【各プラットフォーム】
   Spotify     ─┐
   Apple       ─┴─→ podcast.uzumaki-inc.jp/feed.xml を定期的に確認
       ↓
-  リスナーが聴く
+  リスナーのアプリが feed.xml を読み、音声本体は Cloudflare R2 から直接ストリーミング
 ```
 
 ## RSS生成スクリプトの詳細
