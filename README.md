@@ -16,8 +16,10 @@
 新メンバーのセットアップは [ONBOARDING.md](./ONBOARDING.md) を参照してください。
 
 ```bash
-./scripts/publish.sh 0002 ~/Downloads/realtech_radio_2.m4a
+./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
 ```
+
+（音声の m4a を R2 にアップロードし、mp4 から 10 秒ごとに静止画を切り出します。文字起こしは共有される話者分離済み VTT を使います。）
 
 ## 配信先
 

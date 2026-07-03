@@ -53,6 +53,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 │       └── shownotes.md
 ├── scripts/
 │   ├── publish.sh           ← 新エピソード公開の自動化スクリプト
+│   ├── setup.sh             ← 配信環境のセットアップスクリプト
 │   ├── generate_feed.py
 │   └── requirements.txt
 └── site/                    ← GitHub Actionsが自動生成（触らない）
@@ -64,16 +65,18 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 
 詳細は `OPERATION.md` を参照。概要は以下の通り：
 
-1. `./scripts/publish.sh 0002 ~/Downloads/ファイル名.m4a` を実行
-   - mp3変換 → Whisper文字起こし → R2アップロード → テンプレート生成（自動）
-2. 文字起こしをClaudeに貼り付けて番組概要・ポイント・リンクを生成（Claude+人間）
+1. `./scripts/publish.sh 0007 ~/Downloads/file.m4a ~/Downloads/file.mp4` を実行
+   - m4aをR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
+   - 文字起こしは行わない（共有される話者分離済み VTT を使う）
+2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / duration / description を記入（手動）
 4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
-5. `git push` → GitHub Actionsが feed.xml を自動更新
+5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
+6. `git push` → GitHub Actionsが feed.xml を自動更新
 
 ### エピソード番号規則
 - **4桁ゼロ埋め**（例: `0001`, `0002`, `0003`）
-- R2ファイル名: `episodes/0001.mp3`
+- R2ファイル名: `episodes/0007.m4a`（配信音声は m4a を直接ホスト。mp3 変換はしない）
 
 ---
 
@@ -101,37 +104,23 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 - [x] ep0003 公開完了（2026-04-13、収録日 2026-04-11）
 - [x] ep0004 公開完了（2026-05-11、収録日 2026-04-23）
 - [x] ep0005 公開完了（2026-05-22、収録日 2026-05-18）
-- [ ] ep0006 以降のエピソード公開（次回作業）
+- [x] ep0006 公開完了（2026-06-12、収録日 2026-06-05）
+- [ ] ep0007 以降のエピソード公開（次回作業）
 
 ---
 
 ## ローカル環境（作業Mac）
 
-- **AWS CLI**: `brew install awscli` でインストール済み（v2.34.4）
-- **Whisper**: `~/Library/Python/3.9/bin/whisper`（PATHに要追加）
-- **ffmpeg**: Homebrewでインストール済み
+- **AWS CLI**: `brew install awscli`（R2 アップロード用）
+- **ffmpeg**: Homebrew でインストール（mp4 からの静止画切り出し用）
 - **リポジトリの場所**: `~/src/realtech-radio`（GitHub: uzumaki-inc/realtech-radio）
 
 ### 新しいMacで環境を作る場合
 
-```bash
-# 1. AWS CLIをインストール
-brew install awscli
+`./scripts/setup.sh` が必要なツール（ffmpeg / awscli）の導入と認証設定の確認をまとめて行う。
+認証情報の受け渡し・設定手順は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」）。
 
-# 2. R2プロファイルを設定
-aws configure --profile r2
-# → Access Key ID: Cloudflareの realtech-radio-upload トークン
-# → Secret Access Key: 同上
-# → Default region: auto
-# → Output format: json
-
-# 3. Whisperをインストール
-pip3 install openai-whisper
-brew install ffmpeg
-
-# 4. PATHを通す（~/.zshrcに追加）
-export PATH="$HOME/Library/Python/3.9/bin:$PATH"
-```
+> 文字起こしは共有される話者分離済み VTT を使うため、Whisper などの文字起こしツールは不要。
 
 ---
 
@@ -141,4 +130,4 @@ export PATH="$HOME/Library/Python/3.9/bin:$PATH"
 - プロジェクトマネージャーとして振る舞い、作業を一緒に進めるスタイルを好む
 - ドキュメントはリアルタイムで更新する（作業中に発見したことをすぐ反映）
 - Q&A（`QA.md`）は疑問が出たらその都度追記する
-- 次回の作業は第6回エピソード（`0006`）の公開から
+- 次回の作業は第7回エピソード（`0007`）の公開から

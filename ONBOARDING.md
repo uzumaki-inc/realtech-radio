@@ -52,7 +52,7 @@ cd realtech-radio
 
 ## 3. セットアップスクリプトを実行する
 
-必要な道具（音声変換・アップロード・文字起こしのツール）をまとめて整えます：
+必要な道具（静止画の切り出し・アップロードのツール）をまとめて整えます：
 
 ```bash
 ./scripts/setup.sh
@@ -72,14 +72,17 @@ cd realtech-radio
 
 1Password から **R2 Account ID** をコピーしておきます。
 
-次の 2 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` をコピーした値に書き換えてから、**2 行まとめて**ターミナルに貼り付けて実行します：
+次の 3 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` をコピーした値に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
 
 ```bash
 mkdir -p ~/.config/realtech-radio
 echo 'R2_ACCOUNT_ID="ここにR2 Account ID"' > ~/.config/realtech-radio/config
+chmod 600 ~/.config/realtech-radio/config
 ```
 
-> ⚠️ ターミナルに貼り付けると**すぐ実行される**ので、書き換えは必ずターミナルに貼る前に行ってください。
+> ⚠️ ターミナルに貼り付けると**すぐ実行される**ので、書き換えは必ずターミナルに貼る前に行ってください。書き換えるときは、外側の `" "` は残したまま中身だけを差し替えます。
+>
+> 3 行目の `chmod 600` は、この設定ファイルを自分だけが読める状態にするためのものです。
 >
 > バケット名は標準値（`realtech-radio-audio`）が自動で使われるので、書く必要はありません。
 
@@ -91,18 +94,17 @@ cat ~/.config/realtech-radio/config
 
 ### 4-2. アップロードの認証を設定する
 
+次の 3 行の `（1Passwordの値）` を、1Password の「Access Key ID」「Secret Access Key」に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
+
 ```bash
-aws configure --profile r2
+aws configure set aws_access_key_id "（1Passwordの値）" --profile r2
+aws configure set aws_secret_access_key "（1Passwordの値）" --profile r2
+aws configure set region auto --profile r2
 ```
 
-4 つ質問されるので、次のように答えます：
-
-| 質問 | 入力する内容 |
-|---|---|
-| AWS Access Key ID | 1Password の「Access Key ID」 |
-| AWS Secret Access Key | 1Password の「Secret Access Key」 |
-| Default region name | `auto` と入力 |
-| Default output format | `json` と入力 |
+> `（1Passwordの値）` は 3 箇所すべて置き換えます（1 行目＝Access Key ID、2 行目＝Secret Access Key）。外側の `" "` は残したまま中身だけを差し替えてください。3 行目の `auto` はそのままで大丈夫です。
+>
+> 貼り付けた後、最後の行が実行されずに残ったら、一度 Enter を押してください。
 
 ### 4-3. GitHub の認証を設定する（git push 用）
 
@@ -131,7 +133,7 @@ gh auth login
 . ~/.config/realtech-radio/config && aws s3 ls "s3://${R2_BUCKET:-realtech-radio-audio}/episodes/" --profile r2 --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 ```
 
-エピソードの mp3 ファイルの一覧が表示されれば、準備完了です 🎉
+エピソードの音声ファイルの一覧が表示されれば、準備完了です 🎉
 エラーが出る場合は、手順 4 の設定値（Account ID / Access Key / Secret）を 1Password と見比べて見直してください。
 
 エピソードの公開手順は [OPERATION.md](./OPERATION.md) を参照してください。
