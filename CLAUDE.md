@@ -69,7 +69,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
    - m4aをR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
-3. `meta.yaml` の title / duration / description を記入（手動）
+3. `meta.yaml` の title / description を記入（手動。duration は publish.sh が自動入力）
 4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
 5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
 6. `git push` → GitHub Actionsが feed.xml を自動更新
@@ -112,12 +112,13 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 ## ローカル環境（作業Mac）
 
 - **AWS CLI**: `brew install awscli`（R2 アップロード用）
-- **ffmpeg**: Homebrew でインストール（mp4 からの静止画切り出し用）
+- **ffmpeg**: Homebrew でインストール（mp4 からの静止画切り出し・再生時間の自動計算用）
+- **GitHub CLI（gh）**: Homebrew でインストール（公開時の git push 認証用）
 - **リポジトリの場所**: `~/src/realtech-radio`（GitHub: uzumaki-inc/realtech-radio）
 
 ### 新しいMacで環境を作る場合
 
-`./scripts/setup.sh` が必要なツール（ffmpeg / awscli）の導入と認証設定の確認をまとめて行う。
+`./scripts/setup.sh` が必要なツール（ffmpeg / awscli / gh）の導入と認証設定・R2 接続の確認をまとめて行う。
 認証情報の受け渡し・設定手順は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」）。
 
 > 文字起こしは共有される話者分離済み VTT を使うため、Whisper などの文字起こしツールは不要。

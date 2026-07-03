@@ -1,5 +1,7 @@
 # RSS生成スクリプトの役割
 
+エピソードを `git push` すると RSS フィードが自動で配信される仕組みの技術解説です。読まなくても普段の運用はできます。「なぜ GitHub リポジトリが配信のマスターなのか」「push の裏で何が起きているのか」を知りたいときに読んでください。
+
 ## 全体フロー
 
 ```
@@ -8,9 +10,9 @@
 └─────────────────────────────────────────────────────────────────┘
 
 【あなたの作業】
-  episodes/001/
-  ├── meta.yaml         ← 番組タイトル、公開日、音声URLなどを書く
-  └── shownotes.md      ← ショーノート（説明文）を書く
+  episodes/0007/
+  ├── meta.yaml         ← 番組タイトル、公開日、音声URLなど（publish.sh が下書きを自動生成）
+  └── shownotes.md      ← ショーノート（説明文。Claude Code と仕上げる）
       ↓
    git push
       ↓
@@ -26,8 +28,7 @@
       ↓
 【各プラットフォーム】
   Spotify     ─┐
-  Apple       ├─→ podcast.uzumaki-inc.jp/feed.xml を定期的に確認
-  Google      ─┘
+  Apple       ─┴─→ podcast.uzumaki-inc.jp/feed.xml を定期的に確認
       ↓
   リスナーが聴く
 ```
@@ -45,15 +46,15 @@
   ├─ image: "https://podcast.uzumaki-inc.jp/artwork.jpg"
   └─ link: "https://podcast.uzumaki-inc.jp"
 
-  episodes/001/meta.yaml
+  episodes/0001/meta.yaml
   │
   ├─ title: "声でPC操作！でも落とし穴は？音声認識サービスの裏側"
   ├─ date: 2026-03-07
   ├─ duration: "00:30:00"
-  ├─ audio_url: "https://r2.../001.mp3"    ← Cloudflare R2上の場所
+  ├─ audio_url: "https://r2.../0001.mp3"    ← Cloudflare R2上の場所
   └─ description: "音声認識でPCを操作する..."
 
-  episodes/001/shownotes.md
+  episodes/0001/shownotes.md
   │
   ├─ # 声でPC操作！でも落とし穴は？
   ├─ ## 今回のテーマ
@@ -78,7 +79,7 @@
          <item>
            <title>声でPC操作！でも落とし穴は？音声認識サービスの裏側</title>
            <pubDate>Sat, 07 Mar 2026 00:00:00 +0000</pubDate>
-           <enclosure url="https://r2.../001.mp3" ... />
+           <enclosure url="https://r2.../0001.mp3" ... />
            <itunes:duration>00:30:00</itunes:duration>
            <content:encoded>
              <h2>今回のテーマ</h2>
@@ -91,6 +92,8 @@
        </channel>
      </rss>
 ```
+
+> 例は ep0001（mp3 時代）のもの。ep0007 以降の現行フローは m4a ですが、`generate_feed.py` がファイル形式に応じた MIME タイプを自動判定するため、どちらも同じ仕組みで配信されます。
 
 ## 手動 vs 自動化の比較
 
@@ -111,7 +114,8 @@
 
   エピソード追加
     ↓
-  episodes/001/meta.yaml と shownotes.md を書く
+  episodes/0007/meta.yaml と shownotes.md を書く
+  （テンプレは publish.sh が自動生成）
     ↓
   git push
     ↓
