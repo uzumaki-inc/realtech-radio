@@ -38,9 +38,8 @@ Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテ�
 realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 ├── CLAUDE.md                ← このファイル
 ├── OPERATION.md             ← 運用手順書（エピソード公開フロー）
-├── ONBOARDING.md            ← 配信メンバー向けオンボーディング
+├── ONBOARDING.md            ← 編集者向けオンボーディング
 ├── R2_SETUP.md              ← R2セットアップ・トークン発行（管理者向け）
-├── DOMAIN_SETUP.md
 ├── QA.md                    ← セットアップQ&A集
 ├── RSS_FLOW.md
 ├── README.md
@@ -71,7 +70,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / duration / description を記入（手動）
-4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
+4. `shownotes.md` のクレジット登壇者（配信者以外）を記入（手動）
 5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
 6. `git push` → GitHub Actionsが feed.xml を自動更新
 
@@ -122,13 +121,3 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 認証情報の受け渡し・設定手順は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」）。
 
 > 文字起こしは共有される話者分離済み VTT を使うため、Whisper などの文字起こしツールは不要。
-
----
-
-## Claudeへの引き継ぎメモ
-
-- 工藤さんはiOSエンジニア出身の経営者。技術的な話はエンジニアレベルで通じる
-- プロジェクトマネージャーとして振る舞い、作業を一緒に進めるスタイルを好む
-- ドキュメントはリアルタイムで更新する（作業中に発見したことをすぐ反映）
-- Q&A（`QA.md`）は疑問が出たらその都度追記する
-- 次回の作業は第7回エピソード（`0007`）の公開から

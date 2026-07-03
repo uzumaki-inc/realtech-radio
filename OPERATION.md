@@ -7,17 +7,15 @@
 ## 全体フロー
 
 ```
-収録（Zoom クラウド録画：音声 m4a ＋ 動画 mp4）
+配信者：Zoom クラウド録画から 音声 m4a・動画 mp4・話者分離 VTT をダウンロード → 編集者に渡す
     ↓
-音声 m4a を編集（BGM 付けなど）＋ 話者分離済み VTT を用意
+編集者：音声 m4a を編集（BGM 付けなど）
     ↓
 ./scripts/publish.sh を実行（自動）
     ↓ m4aをR2アップロード → mp4から10秒ごとに静止画を切り出し → ファイル生成
-VTT（＋静止画）をClaudeに渡してまとめを生成
+VTT（＋静止画）を Claude Code に渡してまとめを生成
     ↓
-meta.yaml / shownotes.md を編集（手動）
-    ↓
-git push（手動）
+Claude Code に頼んで meta.yaml / shownotes.md を仕上げ、公開（git push）
     ↓
 GitHub Actions が feed.xml を自動更新（自動）
     ↓
@@ -26,31 +24,37 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 | 作業 | 担当 | 目安時間 |
 |---|---|---|
-| Zoom収録（クラウド録画） | 人間 | 収録時間による |
-| 音声編集（BGM 付けなど） | 人間 | 編集内容による |
-| publish.sh 実行 | スクリプト | 数分（アップロード＋静止画切り出し） |
-| Claudeと対話（番組概要・ポイント・リンク生成） | 人間+Claude | 10〜15分 |
-| meta.yaml 記入（title・duration・description） | 人間 | 5分 |
-| shownotes.md 記入（登壇者クレジット） | 人間 | 2分 |
-| git push | 人間 | 1分 |
+| Zoom収録（クラウド録画）＋ファイル受け渡し | 配信者 | 収録時間による |
+| 音声編集（BGM 付けなど） | 編集者 | 編集内容による |
+| publish.sh 実行 | 編集者（スクリプトが自動処理） | 数分（アップロード＋静止画切り出し） |
+| Claude Code と対話（番組概要・ポイント・リンク生成） | 編集者+Claude Code | 10〜15分 |
+| meta.yaml / shownotes 仕上げ・公開 | 編集者+Claude Code | 5分 |
 
 ---
 
 ## 手順
 
-### 1. 収録データを用意し、音声を編集する
+### 1. 配信者が収録データを用意し、編集者に渡す
 
-- Zoom の**クラウド録画**から、**音声 `.m4a`** と **動画 `.mp4`** をダウンロードフォルダに置く
-- 音声 `.m4a` は、公開前に**手動で編集する**（BGM を付ける、頭出しや不要部分のカットなど）。**編集後の m4a を配信に使う**
-- 話者分離済みの **`.vtt`**（文字起こし）を用意する
+配信者が Zoom の**クラウド録画**から、次の 3 つをダウンロードして編集者に渡す：
 
-ファイル命名例：`realtech_radio_7.m4a` / `.mp4` / `.vtt`
+- **音声 `.m4a`**
+- **動画 `.mp4`**
+- 話者分離済みの **`.vtt`**（文字起こし）
+
+編集者は受け取ったファイルをダウンロードフォルダに置く。ファイル命名例：`realtech_radio_7.m4a` / `.mp4` / `.vtt`
 
 > mp4 は「10 秒ごとの静止画」の切り出し元です。動画がない（音声のみの）回は mp4 を省略できます（VTT だけでまとめを作れます）。
 
 ---
 
-### 2. publish.sh を実行する
+### 2. 編集者が音声を編集する
+
+音声 `.m4a` に**手動で編集を加える**（BGM を付ける、頭出しや不要部分のカットなど）。**編集後の m4a を配信に使う**。
+
+---
+
+### 3. publish.sh を実行する
 
 ```bash
 cd ~/src/realtech-radio
@@ -66,19 +70,13 @@ cd ~/src/realtech-radio
 3. `episodes/0007/meta.yaml` を作成（audio_url / file_size は自動入力）
 4. `episodes/0007/shownotes.md` のテンプレートを作成
 
-> 文字起こしはスクリプトでは行いません（共有される VTT を使います）。
-
 ---
 
-### 3. Claudeと対話してshownotes.mdを生成する
+### 4. Claude Code に VTT を渡してまとめを作る
 
-話者分離済みの **VTT** を Claude に渡す。さらに手順 2 で切り出した **静止画**（`~/Downloads/realtech-frames-0007/`）も渡すと、スライドや画面共有の内容も踏まえた精度の高いまとめになる。以下を生成してもらう：
+話者分離済みの **VTT** を Claude Code に渡す。さらに手順 3 で切り出した **静止画**（`~/Downloads/realtech-frames-0007/`）も渡すと、スライドや画面共有の内容も踏まえた精度の高いまとめになる。番組概要・今回のポイント・リンクを作ってもらい、`shownotes.md` に反映してもらう。
 
-- **番組概要** → `shownotes.md` の `## 番組概要` に貼り付け
-- **今回のポイント** → `shownotes.md` の `## 今回のポイント` に貼り付け
-- **リンク** → `shownotes.md` の `## リンク` に貼り付け
-
-生成後、`## クレジット` の登壇者（工藤以外）を手入力で追加する。
+登壇者クレジット（配信者以外）は、Claude Code に「今回の登壇者は〇〇」と伝えれば追記してくれる。
 
 **まとめが終わったら、切り出した静止画をローカルから削除する**（PC にノイズを溜めないため）。削除コマンドは publish.sh の最後にも表示されます：
 
@@ -88,38 +86,16 @@ rm -rf ~/Downloads/realtech-frames-0007
 
 ---
 
-### 4. meta.yaml を編集する
+### 5. Claude Code に頼んで仕上げ、公開する
 
-`episodes/0007/meta.yaml` を開いて以下を記入する：
+ここは自分でファイルを直接編集する必要はありません。**Claude Code に自然言語で頼めば対応してくれます**（足りない情報は Claude Code のほうから聞いてくれます）。たとえばこう伝えます：
 
-```yaml
-title: "エピソードタイトル"      # ← 記入
-date: 2026-07-01                  # ← 収録日または公開日
-duration: "00:30:00"              # ← 実際の尺（例: 30分）
-audio_url: "https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.m4a"  # 自動入力済み
-file_size: 31234567               # 自動入力済み
-description: "説明文"             # ← 記入
-explicit: false
-```
+> ep0007 を公開したい。タイトルは「〇〇」、説明は「〇〇」。meta.yaml と shownotes を仕上げて、コミットして push して。
 
-> **durationの確認方法：**
-> ```bash
-> ffprobe ~/Downloads/realtech_radio_7.m4a 2>&1 | grep Duration
-> ```
+- `meta.yaml` の title / description / 収録日、`shownotes.md` の登壇者などは、Claude Code が聞いてきたら答えるだけでOK（尺（duration）は Claude Code が音声から調べてくれます）
+- 仕上がったら「コミットして push して」と頼めば、`git push` まで実行してくれます
 
----
-
-### 5. git push する
-
-```bash
-git add episodes/0007/
-git commit -m "ep0007: publish"
-git push
-```
-
-→ GitHub Actionsが自動起動して `feed.xml` が更新される（約1分）
-
-→ SpotifyとApple Podcastsが次回のクロールで自動取得（数時間以内）
+push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更新されます。Spotify・Apple Podcasts は次回のクロールで自動取得します（数時間以内）。
 
 ---
 
@@ -160,7 +136,7 @@ mp4 を渡さずに publish.sh を実行すると、静止画の切り出しを�
 
 ### R2アップロードが失敗する
 
-使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ バックオフィス共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
+使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
 
 Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 

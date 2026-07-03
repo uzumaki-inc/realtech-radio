@@ -1,7 +1,7 @@
-# 配信メンバー向けオンボーディングガイド
+# 編集者向けオンボーディングガイド
 
-リアルテックラジオの配信作業（エピソードの公開）に新しく加わるメンバー向けの手順書です。
-エンジニアでなくても進められるように書いています。分からないところがあれば管理者（工藤）に聞いてください。
+リアルテックラジオのエピソード公開作業に新しく加わる編集者向けの手順書です。
+エンジニアでなくても進められるように書いています。分からないところがあれば配信者に聞いてください。
 
 ---
 
@@ -30,7 +30,7 @@
 
 > バケット名は 1Password には入れていません。標準値（`realtech-radio-audio`）が自動で使われます。
 
-あわせて、**GitHub リポジトリへの招待**も受けます。配信メンバーは realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されます（組織メンバーになる必要はありません）。管理者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
+あわせて、**GitHub リポジトリへの招待**も受けます。編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されます（組織メンバーになる必要はありません）。配信者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
 
 > まだ届いていないものがある場合は、管理者に依頼してください。
 
@@ -71,19 +71,7 @@ cd realtech-radio
 
 ### 4-1. 設定ファイルを作る（R2 Account ID）
 
-次の 3 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` を 1Password の **R2 Account ID** に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
-
-```bash
-mkdir -p ~/.config/realtech-radio
-echo 'R2_ACCOUNT_ID="ここにR2 Account ID"' > ~/.config/realtech-radio/config
-chmod 600 ~/.config/realtech-radio/config
-```
-
-> ⚠️ ターミナルに貼り付けると**すぐ実行される**ので、書き換えは必ずターミナルに貼る前に行ってください。書き換えるときは、外側の `" "` は残したまま中身だけを差し替えます。
->
-> 3 行目の `chmod 600` は、この設定ファイルを自分だけが読める状態にするためのものです。
->
-> バケット名は標準値（`realtech-radio-audio`）が自動で使われるので、書く必要はありません。
+1Password の「realtech-radio 配信用」に、**コピペ一発で設定できる手順**（`~/.config/realtech-radio/config` を作るコマンド）が書いてあります。そのメモを参照して、ターミナルに貼り付けて実行してください。
 
 作れたか確認します。1Password の値と同じものが表示されればOKです：
 
@@ -93,23 +81,13 @@ cat ~/.config/realtech-radio/config
 
 ### 4-2. アップロードの認証を設定する
 
-次の 3 行の `（1Passwordの値）` を、1Password の「Access Key ID」「Secret Access Key」に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
-
-```bash
-aws configure set aws_access_key_id "（1Passwordの値）" --profile r2
-aws configure set aws_secret_access_key "（1Passwordの値）" --profile r2
-aws configure set region auto --profile r2
-```
-
-> `（1Passwordの値）` は 3 箇所すべて置き換えます（1 行目＝Access Key ID、2 行目＝Secret Access Key）。外側の `" "` は残したまま中身だけを差し替えてください。3 行目の `auto` はそのままで大丈夫です。
->
-> 貼り付けた後、最後の行が実行されずに残ったら、一度 Enter を押してください。
+こちらも 1Password の「realtech-radio 配信用」に、**コピペ一発で設定できる手順**（`aws configure set` で Access Key ID / Secret Access Key を登録するコマンド）が書いてあります。そのメモを参照して、ターミナルに貼り付けて実行してください。
 
 ### 4-3. GitHub の認証を設定する（git push 用）
 
 エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。
 
-配信メンバーは realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので、自分の GitHub アカウントでログインすれば、そのまま push できます（フォークや Pull Request は不要です）。手順 1 の招待（Accept 済み）を確認してから：
+編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので、自分の GitHub アカウントでログインすれば、そのまま push できます（フォークや Pull Request は不要です）。手順 1 の招待（Accept 済み）を確認してから：
 
 ```bash
 brew install gh
@@ -138,11 +116,3 @@ gh auth login
 エラーが出る場合は、手順 4 の設定値（Account ID / Access Key / Secret）を 1Password と見比べて見直してください。
 
 エピソードの公開手順は [OPERATION.md](./OPERATION.md) を参照してください。
-
----
-
-## 配信メンバーから離れるとき
-
-本人の作業は 1 つだけです：**秘密情報を個人のメモなどにコピーしていた場合は、削除してください。**
-
-Vault 共有の解除やトークンの失効・更新は、管理者が [R2_SETUP.md](./R2_SETUP.md) の手順で行います。

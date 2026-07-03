@@ -191,34 +191,6 @@ Step 6（プラットフォーム登録）の前までに用意する必要が�
 
 ### Q: エピソードの文字起こしはどうやる？
 
-**A:** Zoom収録がローカル録画の場合、Zoom側の自動文字起こしは利用できない。OpenAI Whisperをローカルで実行するのが無料かつ高精度。
+**A:** 話者分離済みの **VTT** を外部で用意して共有する運用。以前は Zoom のローカル録画を OpenAI Whisper でローカル文字起こししていたが、現在は**クラウド録画＋話者分離 VTT** に切り替えたため、`publish.sh` 側での文字起こし（Whisper など）は行わない。
 
-### Q: Whisperのセットアップと実行手順は？
-
-**A:** MacのターミナルでHomebrewがない場合から含めた手順は以下の通り。
-
-```bash
-# ① Homebrewがなければインストール（既にあればスキップ）
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# ② Python 3 と ffmpeg をインストール
-brew install python@3.11 ffmpeg
-
-# ③ Whisperをインストール
-pip3 install openai-whisper
-
-# ④ 文字起こしを実行（音声ファイルのあるフォルダで）
-whisper realtech_radio_1_20260218.m4a --language ja --model medium --output_format txt
-```
-
-- `--model medium` は日本語の精度と実行速度のバランスが良い。より高精度を求めるなら `--model large` にする（ただし時間がかかる）
-- 出力は同じフォルダに `realtech_radio_1_20260218.txt` として保存される
-- M1/M2 Macなら `medium` モデルで34分の音声が10〜20分程度で完了する見込み
-
-### Q: Whisper以外の選択肢は？
-
-**A:** 有料だがクラウドサービスも使える。
-
-- **OpenAI Whisper API**: $0.006/分。34分で約$0.20（約30円）。API経由なのでPCスペック不問
-- **Google Speech-to-Text**: 無料枠あり（月60分）。それ以降は$0.006/15秒
-- **macOS「聞き取り」**: 無料だがリアルタイム速度。34分の音声に34分かかる
+番組概要・今回のポイント・リンクの**まとめは、この VTT（＋ mp4 から10秒ごとに切り出した静止画）を Claude に渡して生成する**。静止画も渡すと、スライドや画面共有の内容も踏まえた精度の高いまとめになる。詳しい公開手順は [OPERATION.md](./OPERATION.md) を参照。
