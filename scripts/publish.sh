@@ -4,7 +4,6 @@
 # Usage: ./scripts/publish.sh <episode_number> <m4a_file> [mp4_file]
 # Example: ./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
 #
-# 文字起こしは共有される話者分離済み VTT を使うため、このスクリプトでは行いません。
 # m4a: R2 にアップロードする配信用音声。
 # mp4: 任意。渡すと 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
 #      切り出した画像はローカル一時フォルダに置き、まとめが終わったら削除してください

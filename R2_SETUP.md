@@ -129,7 +129,8 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
 発行したキーは、共有 Vault に以下の内容で登録します：
 
 - **アイテム名**: `realtech-radio 配信用`
-- **登録する 4 点**: R2 Account ID ／ バケット名（`realtech-radio-audio`）／ Access Key ID ／ Secret Access Key
+- **登録する 3 点**: R2 Account ID ／ Access Key ID ／ Secret Access Key
+  - バケット名（`realtech-radio-audio`）は 1Password には入れない（publish.sh に標準値があるため不要）
 - **メモ欄に書くこと**:
   - 用途: `publish.sh` での音声アップロード用
   - セットアップ手順: [ONBOARDING.md](./ONBOARDING.md) へのリンク

@@ -38,7 +38,8 @@ Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテ�
 realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 ├── CLAUDE.md                ← このファイル
 ├── OPERATION.md             ← 運用手順書（エピソード公開フロー）
-├── UPLOAD_AND_PUBLISH.md
+├── ONBOARDING.md            ← 配信メンバー向けオンボーディング
+├── R2_SETUP.md              ← R2セットアップ・トークン発行（管理者向け）
 ├── DOMAIN_SETUP.md
 ├── QA.md                    ← セットアップQ&A集
 ├── RSS_FLOW.md

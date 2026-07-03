@@ -20,16 +20,17 @@
 ## 1. 認証情報と招待を受け取る
 
 管理者から、1Password の共有 Vault にあるアイテム **「realtech-radio 配信用」** への招待を受けます。
-アイテムには以下の 4 点が入っています：
+アイテムには以下の 3 点が入っています。手順 4 で、それぞれを 1Password からコピーして設定します：
 
 | 項目 | 何に使うか |
 |---|---|
 | R2 Account ID | アップロード先の接続情報（設定ファイルに書く） |
-| バケット名 | 音声ファイルの保存場所の名前（通常は書かなくてOK。標準値が使われます） |
-| Access Key ID | アップロードの認証（`aws configure` で入力） |
+| Access Key ID | アップロードの認証（`aws configure set` で入力） |
 | Secret Access Key | 同上 |
 
-あわせて、**GitHub リポジトリへの招待**も受けます。管理者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
+> バケット名は 1Password には入れていません。標準値（`realtech-radio-audio`）が自動で使われます。
+
+あわせて、**GitHub リポジトリへの招待**も受けます。配信メンバーは realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されます（組織メンバーになる必要はありません）。管理者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
 
 > まだ届いていないものがある場合は、管理者に依頼してください。
 
@@ -68,11 +69,9 @@ cd realtech-radio
 
 1Password の「realtech-radio 配信用」を開いて見ながら、以下の 3 つを設定します。
 
-### 4-1. 設定ファイルを作る
+### 4-1. 設定ファイルを作る（R2 Account ID）
 
-1Password から **R2 Account ID** をコピーしておきます。
-
-次の 3 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` をコピーした値に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
+次の 3 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` を 1Password の **R2 Account ID** に書き換えてから、**3 行まとめて**ターミナルに貼り付けて実行します：
 
 ```bash
 mkdir -p ~/.config/realtech-radio
@@ -108,14 +107,16 @@ aws configure set region auto --profile r2
 
 ### 4-3. GitHub の認証を設定する（git push 用）
 
-エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。手順 1 の招待を承諾済みであることを確認してから：
+エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。
+
+配信メンバーは realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので、自分の GitHub アカウントでログインすれば、そのまま push できます（フォークや Pull Request は不要です）。手順 1 の招待（Accept 済み）を確認してから：
 
 ```bash
 brew install gh
 gh auth login
 ```
 
-質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。
+質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。自分の GitHub アカウントでログインしてください（Write ロールが付いているので、このリポジトリへ直接 push できます）。
 
 ---
 
