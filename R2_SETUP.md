@@ -108,9 +108,9 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
    - 「Create API token」をクリック
    - Access Key ID と Secret Access Key を保存
 
-## バックオフィス共有用トークンの発行と受け渡し（管理者向け）
+## 編集者共有用トークンの発行と受け渡し（管理者向け）
 
-配信作業をバックオフィスメンバーに共有する場合の手順です。
+エピソード公開作業を編集者に共有する場合の手順です。
 
 ### 専用トークンを発行する
 
@@ -129,10 +129,9 @@ Cloudflareアカウントがない場合は、https://dash.cloudflare.com/ で�
 発行したキーは、共有 Vault に以下の内容で登録します：
 
 - **アイテム名**: `realtech-radio 配信用`
-- **登録する 4 点**: R2 Account ID ／ バケット名（`realtech-radio-audio`）／ Access Key ID ／ Secret Access Key
-- **メモ欄に書くこと**:
-  - 用途: `publish.sh` での音声アップロード用
-  - セットアップ手順: [ONBOARDING.md](./ONBOARDING.md) へのリンク
+- **登録する 3 点**: R2 Account ID ／ Access Key ID ／ Secret Access Key
+  - バケット名（`realtech-radio-audio`）は 1Password には入れない（publish.sh に標準値があるため不要）
+- **メモ欄**: 用途（`publish.sh` での音声アップロード用）と、セットアップ手順は [ONBOARDING.md](./ONBOARDING.md) を参照、と記載
 
 メンバーには Vault 共有で渡し、Slack やメールでは送らない運用とします。
 

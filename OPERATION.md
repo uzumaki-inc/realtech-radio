@@ -7,13 +7,15 @@
 ## 全体フロー
 
 ```
-収録（Zoom）
+配信者：Zoom クラウド録画から 音声 m4a・動画 mp4・話者分離 VTT をダウンロード → 編集者に渡す
+    ↓
+編集者：音声 m4a を編集（BGM 付けなど）
     ↓
 ./scripts/publish.sh を実行（自動）
-    ↓ mp3変換 → 文字起こし → R2アップロード → ファイル生成
-meta.yaml / shownotes.md を編集（手動）
+    ↓ m4aをR2アップロード → mp4から10秒ごとに静止画を切り出し → ファイル生成
+VTT（＋静止画）を Claude Code に渡してまとめを生成
     ↓
-git push（手動）
+Claude Code に頼んで meta.yaml / shownotes.md を仕上げ、公開（git push）
     ↓
 GitHub Actions が feed.xml を自動更新（自動）
     ↓
@@ -22,86 +24,78 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 | 作業 | 担当 | 目安時間 |
 |---|---|---|
-| Zoom収録 | 人間 | 収録時間による |
-| publish.sh 実行 | スクリプト | 15〜30分（文字起こし含む） |
-| Claudeと対話（番組概要・ポイント・リンク生成） | 人間+Claude | 10〜15分 |
-| meta.yaml 記入（title・duration・description） | 人間 | 5分 |
-| shownotes.md 記入（登壇者クレジット） | 人間 | 2分 |
-| git push | 人間 | 1分 |
+| Zoom収録（クラウド録画）＋ファイル受け渡し | 配信者 | 収録時間による |
+| 音声編集（BGM 付けなど） | 編集者 | 編集内容による |
+| publish.sh 実行 | 編集者（スクリプトが自動処理） | 数分（アップロード＋静止画切り出し） |
+| Claude Code と対話（番組概要・ポイント・リンク生成） | 編集者+Claude Code | 10〜15分 |
+| meta.yaml / shownotes 仕上げ・公開 | 編集者+Claude Code | 5分 |
 
 ---
 
 ## 手順
 
-### 1. Zoom収録後、m4aファイルをDownloadsに置く
+### 1. 配信者が収録データを用意し、編集者に渡す
 
-Zoomのローカル録画（`.m4a`）をダウンロードフォルダに移動する。
+配信者が Zoom の**クラウド録画**から、次の 3 つをダウンロードして編集者に渡す：
 
-ファイル命名例：`realtech_radio_2_20260301.m4a`
+- **音声 `.m4a`**
+- **動画 `.mp4`**
+- 話者分離済みの **`.vtt`**（文字起こし）
+
+編集者は受け取ったファイルをダウンロードフォルダに置く。ファイル命名例：`realtech_radio_7.m4a` / `.mp4` / `.vtt`
+
+> mp4 は「10 秒ごとの静止画」の切り出し元です。動画がない（音声のみの）回は mp4 を省略できます（VTT だけでまとめを作れます）。
 
 ---
 
-### 2. publish.sh を実行する
+### 2. 編集者が音声を編集する
+
+音声 `.m4a` に**手動で編集を加える**（BGM を付ける、頭出しや不要部分のカットなど）。**編集後の m4a を配信に使う**。
+
+---
+
+### 3. publish.sh を実行する
 
 ```bash
-cd ~/path/to/podcast-repo
-./scripts/publish.sh 0002 ~/Downloads/realtech_radio_2_20260301.m4a
+cd ~/src/realtech-radio
+./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
 ```
+
+（mp4 がない回は 3 つ目の引数を省略：`./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a`）
 
 **スクリプトが自動でやること：**
 
-1. `m4a → mp3` に変換（ffmpeg）
-2. WhisperKit（large-v3）で日本語文字起こし → JSON レポート生成後、 `jq` で `.text` を抽出して `~/Downloads/ファイル名.txt` に保存
-3. mp3を R2 にアップロード（`episodes/0002.mp3`）
-4. `episodes/0002/meta.yaml` を作成（audio_url / file_size は自動入力）
-5. `episodes/0002/shownotes.md` のテンプレートを作成
+1. m4a を R2 にアップロード（`episodes/0007.m4a`）
+2. mp4 から 10 秒ごとに静止画（JPEG）を切り出し（`~/Downloads/realtech-frames-0007/`）
+3. `episodes/0007/meta.yaml` を作成（audio_url / file_size は自動入力）
+4. `episodes/0007/shownotes.md` のテンプレートを作成
 
 ---
 
-### 3. Claudeと対話してshownotes.mdを生成する
+### 4. Claude Code に VTT を渡してまとめを作る
 
-文字起こし（`~/Downloads/ファイル名.txt`）をClaudeに貼り付けて、以下を生成してもらう：
+話者分離済みの **VTT** を Claude Code に渡す。さらに手順 3 で切り出した **静止画**（`~/Downloads/realtech-frames-0007/`）も渡すと、スライドや画面共有の内容も踏まえた精度の高いまとめになる。番組概要・今回のポイント・リンクを作ってもらい、`shownotes.md` に反映してもらう。
 
-- **番組概要** → `shownotes.md` の `## 番組概要` に貼り付け
-- **今回のポイント** → `shownotes.md` の `## 今回のポイント` に貼り付け
-- **リンク** → `shownotes.md` の `## リンク` に貼り付け
+登壇者クレジット（工藤以外）は、Claude Code に「今回の登壇者は〇〇」と伝えれば追記してくれる。
 
-生成後、`## クレジット` の登壇者（工藤以外）を手入力で追加する。
-
----
-
-### 4. meta.yaml を編集する
-
-`episodes/0002/meta.yaml` を開いて以下を記入する：
-
-```yaml
-title: "エピソードタイトル"      # ← 記入
-date: 2026-03-01                  # ← 収録日または公開日
-duration: "00:30:00"              # ← 実際の尺（例: 30分）
-audio_url: "https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0002.mp3"  # 自動入力済み
-file_size: 31234567               # 自動入力済み
-description: "説明文"             # ← 記入
-explicit: false
-```
-
-> **durationの確認方法：**
-> ```bash
-> ffprobe ~/Downloads/realtech_radio_2.mp3 2>&1 | grep Duration
-> ```
-
----
-
-### 5. git push する
+**まとめが終わったら、切り出した静止画をローカルから削除する**（PC にノイズを溜めないため）。削除コマンドは publish.sh の最後にも表示されます：
 
 ```bash
-git add episodes/0002/
-git commit -m "ep0002: publish"
-git push
+rm -rf ~/Downloads/realtech-frames-0007
 ```
 
-→ GitHub Actionsが自動起動して `feed.xml` が更新される（約1分）
+---
 
-→ SpotifyとApple Podcastsが次回のクロールで自動取得（数時間以内）
+### 5. Claude Code に頼んで仕上げ、公開する
+
+ここは自分でファイルを直接編集する必要はありません。**Claude Code に自然言語で頼めば対応してくれます**（足りない情報は Claude Code のほうから聞いてくれます）。たとえばこう伝えます：
+
+> ep0007 を公開したい。タイトルは「〇〇」、説明は「〇〇」。meta.yaml と shownotes を仕上げて、コミットして push して。
+
+- `meta.yaml` の title / description / 収録日、`shownotes.md` の登壇者などは、Claude Code が聞いてきたら答えるだけでOK（尺（duration）は Claude Code が音声から調べてくれます）
+- 仕上がったら「コミットして push して」と頼めば、`git push` まで実行してくれます
+
+push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更新されます。Spotify・Apple Podcasts は次回のクロールで自動取得します（数時間以内）。
 
 ---
 
@@ -110,7 +104,7 @@ git push
 | 確認内容 | URL |
 |---|---|
 | RSSフィード | https://podcast.uzumaki-inc.jp/feed.xml |
-| 音声ファイル（例）| https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0002.mp3 |
+| 音声ファイル（例）| https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.m4a |
 | Spotify | https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p |
 | Apple Podcasts | https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088 |
 
@@ -118,7 +112,7 @@ git push
 
 ## トラブルシューティング
 
-### whisperkit-cli / jq / aws / ffmpeg コマンドが見つからない
+### aws / ffmpeg コマンドが見つからない
 
 セットアップスクリプトを実行する（未導入のものだけ入れてくれる）：
 
@@ -126,11 +120,15 @@ git push
 ./scripts/setup.sh
 ```
 
-> **WhisperKit について**: Argmax 製の Swift native 実装（Apple Silicon の Neural Engine / Metal GPU を活用）。 旧 `openai-whisper`（pip 版、CPU 推論のみ）から移行済み。 初回 transcribe 時に HuggingFace から CoreML モデルを自動 DL する（`large-v3` で数 GB）。 モデルは `~/Documents/huggingface/models/argmaxinc/whisperkit-coreml/` 配下に cache される。
->
-> **jq について**: macOS 15.x 以降は `/usr/bin/jq` が標準同梱。 publish.sh は WhisperKit が生成する JSON レポートから `.text` フィールドを `jq` で抽出して txt を作る。
+> **必要なツールは 2 つだけ**: `aws`（R2 へのアップロード）と `ffmpeg`（mp4 からの静止画切り出し）。文字起こしは共有される VTT を使うため、WhisperKit などの文字起こしツールは不要です。
 
-急ぎで文字起こしを飛ばしたい場合は `--skip-transcribe` を付けて publish.sh を実行し、文字起こしは別マシン・別ツールで行う。
+### 静止画を切り出さずに公開したい（音声のみの回）
+
+mp4 を渡さずに publish.sh を実行すると、静止画の切り出しをスキップして VTT だけで進められます：
+
+```bash
+./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a
+```
 
 ### 設定ファイルが見つからないと言われる
 
@@ -138,7 +136,7 @@ git push
 
 ### R2アップロードが失敗する
 
-使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ バックオフィス共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
+使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
 
 Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
@@ -148,6 +146,6 @@ Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
 | 項目 | 規則 | 例 |
 |---|---|---|
-| エピソード番号 | 4桁ゼロ埋め | `0002`, `0003` |
-| R2上のファイル名 | `episodes/{番号}.mp3` | `episodes/0002.mp3` |
-| ローカルのm4a | 自由（任意） | `realtech_radio_2_20260301.m4a` |
+| エピソード番号 | 4桁ゼロ埋め | `0007`, `0008` |
+| R2上のファイル名 | `episodes/{番号}.m4a` | `episodes/0007.m4a` |
+| ローカルの m4a / mp4 / vtt | 自由（任意） | `realtech_radio_7.m4a` / `.mp4` / `.vtt` |

@@ -3,7 +3,7 @@
 # リアルテックラジオ 配信作業のセットアップスクリプト
 # Usage: ./scripts/setup.sh
 #
-# 配信作業に必要な道具（ffmpeg / AWS CLI / WhisperKit / jq）を揃え、
+# 配信作業に必要な道具（ffmpeg / AWS CLI）を揃え、
 # 認証情報の設定状況を確認します。
 # 何度実行しても安全です（導入済みのものはスキップします）。
 
@@ -45,12 +45,8 @@ install_if_missing() {
 }
 
 echo "▶ Step 2/4: 必要なツールを確認中..."
-install_if_missing ffmpeg ffmpeg                  # 音声変換
-install_if_missing aws awscli                     # R2へのアップロード
-install_if_missing whisperkit-cli whisperkit-cli  # 文字起こし
-install_if_missing jq jq                          # 文字起こし結果の抽出（新しいmacOSは標準同梱）
-echo ""
-echo "   ※ WhisperKit は初回の文字起こし時にモデル（数GB）を自動ダウンロードします。"
+install_if_missing ffmpeg ffmpeg  # mp4からの静止画切り出し
+install_if_missing aws awscli     # R2へのアップロード
 echo ""
 
 # === Step 3: 設定ファイルの確認 ===
@@ -81,16 +77,15 @@ if aws configure list --profile r2 > /dev/null 2>&1; then
 else
   echo "⚠️  r2 プロファイルが未設定です。"
   echo ""
-  echo "   1Password の「realtech-radio 配信用」を見ながら、以下のコマンドを実行してください："
+  echo "   1Password の「realtech-radio 配信用」を見ながら、次の3行の"
+  echo "   （1Passwordの値）を実際の値に置き換えて、まとめて貼り付けてください："
   echo ""
-  echo "   aws configure --profile r2"
+  echo "   aws configure set aws_access_key_id \"（1Passwordの値）\" --profile r2"
+  echo "   aws configure set aws_secret_access_key \"（1Passwordの値）\" --profile r2"
+  echo "   aws configure set region auto --profile r2"
   echo ""
-  echo "   聞かれる項目には次のように答えます："
-  echo "   - AWS Access Key ID     → 1Password の「Access Key ID」"
-  echo "   - AWS Secret Access Key → 1Password の「Secret Access Key」"
-  echo "   - Default region name   → auto と入力"
-  echo "   - Default output format → json と入力"
-  TODO_LIST+=("aws configure --profile r2 の実行（1Password「realtech-radio 配信用」を参照）")
+  echo "   詳しい手順は ONBOARDING.md の「4. 認証情報を設定する」を参照。"
+  TODO_LIST+=("r2 プロファイルの設定（ONBOARDING.md と 1Password「realtech-radio 配信用」を参照）")
 fi
 echo ""
 

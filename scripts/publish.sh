@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # リアルテックラジオ 新エピソード公開スクリプト
-# Usage: ./scripts/publish.sh [--skip-transcribe] <episode_number> <m4a_file_path>
-# Example: ./scripts/publish.sh 0002 ~/Downloads/realtech_radio_2.m4a
+# Usage: ./scripts/publish.sh <episode_number> <m4a_file> [mp4_file]
+# Example: ./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
 #
-# --skip-transcribe: WhisperKitによる文字起こしをスキップする（未導入マシン・急ぎの場合向け）
+# m4a: R2 にアップロードする配信用音声。
+# mp4: 任意。渡すと 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
+#      切り出した画像はローカル一時フォルダに置き、まとめが終わったら削除してください
+#      （次回このスクリプトを実行すると同じ番号の一時フォルダは自動で作り直します）。
 
 set -e
 
@@ -14,45 +17,29 @@ set -e
 # ※ PUBLIC_BASE_URL は podcast.yaml や配信済み feed.xml にも載る公開情報なので、ここに直書きする。
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/realtech-radio/config"
 PUBLIC_BASE_URL="https://pub-2723121c04be418c8520405cedf4afee.r2.dev"
-WHISPER_MODEL="large-v3"
 PROFILE="r2"
+SNAPSHOT_INTERVAL=10  # 秒。mp4 から静止画を切り出す間隔
 
-# === オプション・引数の解析 ===
-SKIP_TRANSCRIBE=false
-ARGS=()
-
-for arg in "$@"; do
-  case "$arg" in
-    --skip-transcribe)
-      SKIP_TRANSCRIBE=true
-      ;;
-    *)
-      ARGS+=("$arg")
-      ;;
-  esac
-done
-
-if [ "${#ARGS[@]}" -ne 2 ]; then
-  echo "Usage: $0 [--skip-transcribe] <episode_number> <m4a_file>"
-  echo "Example: $0 0002 ~/Downloads/realtech_radio_2.m4a"
+# === 引数の解析 ===
+if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
+  echo "Usage: $0 <episode_number> <m4a_file> [mp4_file]"
+  echo "Example: $0 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4"
   exit 1
 fi
 
-EPISODE_NUM="${ARGS[0]}"
-M4A_FILE="${ARGS[1]/#\~/$HOME}"  # ~ を展開
-MP3_FILE="${M4A_FILE%.m4a}.mp3"
+EPISODE_NUM="$1"
+M4A_FILE="${2/#\~/$HOME}"          # ~ を展開
+MP4_FILE="${3:-}"
+MP4_FILE="${MP4_FILE/#\~/$HOME}"   # ~ を展開（未指定なら空のまま）
 EPISODE_DIR="episodes/$EPISODE_NUM"
 DOWNLOAD_DIR=$(dirname "$M4A_FILE")
+FRAMES_DIR="$DOWNLOAD_DIR/realtech-frames-$EPISODE_NUM"
 
 # === 実行前チェック（環境がそろっているか） ===
 die_setup() {
   echo "❌ $1"
   echo "   先に ./scripts/setup.sh を実行してください。"
   exit 1
-}
-
-check_command() {
-  command -v "$1" > /dev/null 2>&1 || die_setup "$1 が見つかりません。"
 }
 
 if [ ! -f "$CONFIG" ]; then
@@ -66,70 +53,63 @@ if [ -z "$R2_ACCOUNT_ID" ]; then
   die_setup "設定ファイルに R2_ACCOUNT_ID が設定されていません: $CONFIG"
 fi
 
+if [ ! -f "$M4A_FILE" ]; then
+  echo "❌ m4a ファイルが見つかりません: $M4A_FILE"
+  exit 1
+fi
+
 BUCKET="${R2_BUCKET:-realtech-radio-audio}"
 R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
-check_command ffmpeg
-check_command aws
+command -v aws > /dev/null 2>&1 || die_setup "aws が見つかりません。"
 
-if ! aws configure list --profile $PROFILE > /dev/null 2>&1; then
+if ! aws configure list --profile "$PROFILE" > /dev/null 2>&1; then
   die_setup "AWS CLI の $PROFILE プロファイルが未設定です。"
 fi
 
-if [ "$SKIP_TRANSCRIBE" = false ]; then
-  if ! command -v whisperkit-cli > /dev/null 2>&1; then
-    echo "❌ whisperkit-cli が見つかりません。"
-    echo "   ./scripts/setup.sh を実行して導入するか、"
-    echo "   --skip-transcribe を付けて文字起こしを飛ばすこともできます（別マシン・別ツールで文字起こしする場合）。"
+if [ -n "$MP4_FILE" ]; then
+  if [ ! -f "$MP4_FILE" ]; then
+    echo "❌ mp4 ファイルが見つかりません: $MP4_FILE"
     exit 1
   fi
-  check_command jq
+  command -v ffmpeg > /dev/null 2>&1 || die_setup "ffmpeg が見つかりません。"
 fi
 
 echo "🎙️  エピソード $EPISODE_NUM の公開処理を開始します..."
 echo ""
 
-# === Step 1: m4a → mp3 変換 ===
-echo "▶ Step 1/4: mp3に変換中..."
-ffmpeg -i "$M4A_FILE" -codec:a libmp3lame -qscale:a 2 "$MP3_FILE" -y
-echo "✅ 変換完了: $MP3_FILE"
-echo ""
-
-# === Step 2: WhisperKit文字起こし ===
-TRANSCRIPT_FILE="${MP3_FILE%.mp3}.txt"
-if [ "$SKIP_TRANSCRIBE" = true ]; then
-  echo "▶ Step 2/4: 文字起こしをスキップしました（--skip-transcribe）"
-  echo ""
-else
-  echo "▶ Step 2/4: WhisperKit（$WHISPER_MODEL）で文字起こし中（初回はモデルDLで時間がかかります）..."
-  whisperkit-cli transcribe \
-    --audio-path "$MP3_FILE" \
-    --model "$WHISPER_MODEL" \
-    --language ja \
-    --report \
-    --report-path "$DOWNLOAD_DIR"
-  JSON_FILE="${MP3_FILE%.mp3}.json"
-  jq -r '.text' "$JSON_FILE" > "$TRANSCRIPT_FILE"
-  echo "✅ 文字起こし完了: $TRANSCRIPT_FILE"
-  echo ""
-fi
-
-# === Step 3: R2にアップロード ===
-echo "▶ Step 3/4: R2にアップロード中..."
-aws s3 cp "$MP3_FILE" \
-  "s3://$BUCKET/episodes/$EPISODE_NUM.mp3" \
-  --profile $PROFILE \
+# === Step 1: m4a を R2 にアップロード ===
+echo "▶ Step 1/3: 音声（m4a）を R2 にアップロード中..."
+aws s3 cp "$M4A_FILE" \
+  "s3://$BUCKET/episodes/$EPISODE_NUM.m4a" \
+  --profile "$PROFILE" \
   --endpoint-url "$R2_ENDPOINT"
 echo "✅ アップロード完了"
 echo ""
 
-# === Step 4: episodes/{num}/ を作成 ===
-echo "▶ Step 4/4: エピソードファイルを作成中..."
+# === Step 2: mp4 から静止画を切り出す（任意） ===
+if [ -n "$MP4_FILE" ]; then
+  echo "▶ Step 2/3: mp4 から ${SNAPSHOT_INTERVAL} 秒ごとに静止画を切り出し中..."
+  rm -rf "$FRAMES_DIR"          # 前回の切り出し画像が残っていれば作り直す（ノイズを溜めない）
+  mkdir -p "$FRAMES_DIR"
+  ffmpeg -i "$MP4_FILE" -vf "fps=1/${SNAPSHOT_INTERVAL}" -qscale:v 2 \
+    "$FRAMES_DIR/frame_%04d.jpg" -y -loglevel error
+  FRAME_COUNT=$(find "$FRAMES_DIR" -name 'frame_*.jpg' | wc -l | tr -d ' ')
+  echo "✅ 静止画 ${FRAME_COUNT} 枚を切り出しました: $FRAMES_DIR"
+  echo ""
+else
+  echo "▶ Step 2/3: mp4 未指定のため静止画の切り出しをスキップしました"
+  echo "   （VTT だけでまとめを作る場合はこのままで問題ありません）"
+  echo ""
+fi
+
+# === Step 3: episodes/{num}/ を作成 ===
+echo "▶ Step 3/3: エピソードファイルを作成中..."
 mkdir -p "$EPISODE_DIR"
 
-# ファイルサイズ取得
-FILE_SIZE=$(wc -c < "$MP3_FILE" | tr -d ' ')
-AUDIO_URL="$PUBLIC_BASE_URL/episodes/$EPISODE_NUM.mp3"
+# ファイルサイズ取得（配信する m4a のバイト数）
+FILE_SIZE=$(wc -c < "$M4A_FILE" | tr -d ' ')
+AUDIO_URL="$PUBLIC_BASE_URL/episodes/$EPISODE_NUM.m4a"
 
 # meta.yaml テンプレート作成
 cat > "$EPISODE_DIR/meta.yaml" << EOF
@@ -146,11 +126,11 @@ EOF
 cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
 ## 番組概要
 
-<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
+<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
 
 ## 今回のポイント
 
-<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
+<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
 -
 -
 -
@@ -164,7 +144,7 @@ cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
 
 ## リンク
 
-<!-- TODO: 文字起こしをClaudeに貼り付けて生成 -->
+<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
 -
 SHOWNOTES
 
@@ -175,29 +155,28 @@ echo "🎉 自動処理が完了しました！"
 echo ""
 echo "【次の手順】"
 echo ""
-if [ "$SKIP_TRANSCRIBE" = true ]; then
-  echo "1. 文字起こしを別途行う（このマシンではスキップしました）："
-  echo "   WhisperKitが使えるマシンで文字起こしするか、"
-  echo "   他の文字起こしツールで $MP3_FILE を文字起こしする"
-else
-  echo "1. 文字起こしを確認："
-  echo "   open \"$TRANSCRIPT_FILE\""
+echo "1. まとめ（番組概要・今回のポイント・リンク）を生成："
+echo "   話者分離済みの VTT を Claude に渡す。"
+if [ -n "$MP4_FILE" ]; then
+  echo "   あわせて切り出した静止画（$FRAMES_DIR）も渡すと、"
+  echo "   画面の情報も踏まえた精度の高いまとめになります。"
 fi
+echo "   → 生成結果を $EPISODE_DIR/shownotes.md に貼り付ける"
 echo ""
-echo "2. 文字起こしをClaudeに貼り付けて以下を生成："
-echo "   - 番組概要"
-echo "   - 今回のポイント"
-echo "   - リンク"
-echo "   → $EPISODE_DIR/shownotes.md に貼り付ける"
-echo ""
-echo "3. 手入力で記入："
+echo "2. 手入力で記入："
 echo "   - $EPISODE_DIR/meta.yaml  → title / duration / description"
 echo "   - $EPISODE_DIR/shownotes.md → クレジットの登壇者（工藤以外）"
 echo ""
-echo "4. 編集が終わったら："
+echo "3. 編集が終わったら："
 echo "   git add $EPISODE_DIR"
 echo "   git commit -m \"ep$EPISODE_NUM: publish\""
 echo "   git push"
 echo ""
 echo "→ GitHub Actionsが自動起動してfeed.xmlが更新されます"
+if [ -n "$MP4_FILE" ]; then
+  echo ""
+  echo "4. まとめが終わったら、切り出した静止画をローカルから削除してください"
+  echo "   （PCにノイズを溜めないため）："
+  echo "   rm -rf \"$FRAMES_DIR\""
+fi
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

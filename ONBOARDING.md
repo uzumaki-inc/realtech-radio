@@ -1,7 +1,7 @@
-# 配信メンバー向けオンボーディングガイド
+# 編集者向けオンボーディングガイド
 
-リアルテックラジオの配信作業（エピソードの公開）に新しく加わるメンバー向けの手順書です。
-エンジニアでなくても進められるように書いています。分からないところがあれば管理者（工藤）に聞いてください。
+リアルテックラジオのエピソード公開作業に新しく加わる編集者向けの手順書です。
+エンジニアでなくても進められるように書いています。分からないところがあれば配信者に聞いてください。
 
 ---
 
@@ -20,16 +20,17 @@
 ## 1. 認証情報と招待を受け取る
 
 管理者から、1Password の共有 Vault にあるアイテム **「realtech-radio 配信用」** への招待を受けます。
-アイテムには以下の 4 点が入っています：
+アイテムには以下の 3 点が入っています。手順 4 で、それぞれを 1Password からコピーして設定します：
 
 | 項目 | 何に使うか |
 |---|---|
 | R2 Account ID | アップロード先の接続情報（設定ファイルに書く） |
-| バケット名 | 音声ファイルの保存場所の名前（通常は書かなくてOK。標準値が使われます） |
-| Access Key ID | アップロードの認証（`aws configure` で入力） |
+| Access Key ID | アップロードの認証（`aws configure set` で入力） |
 | Secret Access Key | 同上 |
 
-あわせて、**GitHub リポジトリへの招待**も受けます。管理者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
+> バケット名は 1Password には入れていません。標準値（`realtech-radio-audio`）が自動で使われます。
+
+あわせて、**GitHub リポジトリへの招待**も受けます。編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されます（組織メンバーになる必要はありません）。配信者に自分の GitHub ユーザー名を伝え、届いた招待（メールまたは GitHub の通知）の「Accept」を押してください。GitHub アカウントがない場合は https://github.com/ で先に作成します。
 
 > まだ届いていないものがある場合は、管理者に依頼してください。
 
@@ -52,7 +53,7 @@ cd realtech-radio
 
 ## 3. セットアップスクリプトを実行する
 
-必要な道具（音声変換・アップロード・文字起こしのツール）をまとめて整えます：
+必要な道具（静止画の切り出し・アップロードのツール）をまとめて整えます：
 
 ```bash
 ./scripts/setup.sh
@@ -68,20 +69,9 @@ cd realtech-radio
 
 1Password の「realtech-radio 配信用」を開いて見ながら、以下の 3 つを設定します。
 
-### 4-1. 設定ファイルを作る
+### 4-1. 設定ファイルを作る（R2 Account ID）
 
-1Password から **R2 Account ID** をコピーしておきます。
-
-次の 2 行を**いったんメモ帳などに貼り付けて**、`ここにR2 Account ID` をコピーした値に書き換えてから、**2 行まとめて**ターミナルに貼り付けて実行します：
-
-```bash
-mkdir -p ~/.config/realtech-radio
-echo 'R2_ACCOUNT_ID="ここにR2 Account ID"' > ~/.config/realtech-radio/config
-```
-
-> ⚠️ ターミナルに貼り付けると**すぐ実行される**ので、書き換えは必ずターミナルに貼る前に行ってください。
->
-> バケット名は標準値（`realtech-radio-audio`）が自動で使われるので、書く必要はありません。
+1Password の「realtech-radio 配信用」に、**コピペ一発で設定できる手順**（`~/.config/realtech-radio/config` を作るコマンド）が書いてあります。そのメモを参照して、ターミナルに貼り付けて実行してください。
 
 作れたか確認します。1Password の値と同じものが表示されればOKです：
 
@@ -91,29 +81,20 @@ cat ~/.config/realtech-radio/config
 
 ### 4-2. アップロードの認証を設定する
 
-```bash
-aws configure --profile r2
-```
-
-4 つ質問されるので、次のように答えます：
-
-| 質問 | 入力する内容 |
-|---|---|
-| AWS Access Key ID | 1Password の「Access Key ID」 |
-| AWS Secret Access Key | 1Password の「Secret Access Key」 |
-| Default region name | `auto` と入力 |
-| Default output format | `json` と入力 |
+こちらも 1Password の「realtech-radio 配信用」に、**コピペ一発で設定できる手順**（`aws configure set` で Access Key ID / Secret Access Key を登録するコマンド）が書いてあります。そのメモを参照して、ターミナルに貼り付けて実行してください。
 
 ### 4-3. GitHub の認証を設定する（git push 用）
 
-エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。手順 1 の招待を承諾済みであることを確認してから：
+エピソード公開の最後の手順（`git push`）には GitHub の認証が必要です。
+
+編集者は realtech-radio リポジトリの **Outside Collaborator（Write ロール）** として招待されているので、自分の GitHub アカウントでログインすれば、そのまま push できます（フォークや Pull Request は不要です）。手順 1 の招待（Accept 済み）を確認してから：
 
 ```bash
 brew install gh
 gh auth login
 ```
 
-質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。
+質問には「GitHub.com」→「HTTPS」→「Login with a web browser」の順に答え、ブラウザに表示される画面でコードを入力してログインします。自分の GitHub アカウントでログインしてください（Write ロールが付いているので、このリポジトリへ直接 push できます）。
 
 ---
 
@@ -131,15 +112,7 @@ gh auth login
 . ~/.config/realtech-radio/config && aws s3 ls "s3://${R2_BUCKET:-realtech-radio-audio}/episodes/" --profile r2 --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 ```
 
-エピソードの mp3 ファイルの一覧が表示されれば、準備完了です 🎉
+エピソードの音声ファイルの一覧が表示されれば、準備完了です 🎉
 エラーが出る場合は、手順 4 の設定値（Account ID / Access Key / Secret）を 1Password と見比べて見直してください。
 
 エピソードの公開手順は [OPERATION.md](./OPERATION.md) を参照してください。
-
----
-
-## 配信メンバーから離れるとき
-
-本人の作業は 1 つだけです：**秘密情報を個人のメモなどにコピーしていた場合は、削除してください。**
-
-Vault 共有の解除やトークンの失効・更新は、管理者が [R2_SETUP.md](./R2_SETUP.md) の手順で行います。
