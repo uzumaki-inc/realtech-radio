@@ -2,6 +2,8 @@
 
 新しいエピソードを公開するための手順書です。
 
+> 💡 エンジニアではないと心が折れそうな内容が書いてありますが、**画面共有しながら伴走していくので少しずつ慣れてみてください。** 一人でやりきる必要はありません。分からない用語は巻末の[用語集](#用語集イメージ優先)へ。
+
 ---
 
 ## 全体フロー
@@ -11,12 +13,9 @@
     ↓
 編集者：音声 m4a を編集（BGM 付けなど）
     ↓
-./scripts/publish.sh を実行（自動）
-    ↓ m4aをR2アップロード → mp4から10秒ごとに静止画を切り出し → ファイル生成
-VTT（＋静止画）を Claude Code に渡してまとめを生成
-    ↓
-Claude Code に頼んで meta.yaml / shownotes.md を仕上げ、公開（git push）
-    ↓
+編集者：Claude Code に「ep0007 を公開したい」と頼む
+    ↓ Claude Code が publish.sh を実行（m4a を R2 アップロード・静止画切り出し・テンプレ生成）
+    ↓ VTT（＋静止画）からまとめを生成し、meta.yaml / shownotes.md を仕上げて公開（git push）
 GitHub Actions が feed.xml を自動更新（自動）
     ↓
 Spotify / Apple Podcasts が自動取得（自動）
@@ -26,9 +25,7 @@ Spotify / Apple Podcasts が自動取得（自動）
 |---|---|---|
 | Zoom収録（クラウド録画）＋ファイル受け渡し | 配信者 | 収録時間による |
 | 音声編集（BGM 付けなど） | 編集者 | 編集内容による |
-| publish.sh 実行 | 編集者（スクリプトが自動処理） | 数分（アップロード＋静止画切り出し） |
-| Claude Code と対話（番組概要・ポイント・リンク生成） | 編集者+Claude Code | 10〜15分 |
-| meta.yaml / shownotes 仕上げ・公開 | 編集者+Claude Code | 5分 |
+| エピソード公開（publish.sh 〜 まとめ生成 〜 push） | 編集者+Claude Code | 15〜20分 |
 
 ---
 
@@ -42,9 +39,9 @@ Spotify / Apple Podcasts が自動取得（自動）
 - **動画 `.mp4`**
 - 話者分離済みの **`.vtt`**（文字起こし）
 
-編集者は受け取ったファイルをダウンロードフォルダに置く。ファイル命名例：`realtech_radio_7.m4a` / `.mp4` / `.vtt`
+編集者は受け取ったファイルをダウンロードフォルダに置く。**ファイル名は自由**（Zoom からダウンロードした名前のままでOK）。
 
-> mp4 は「10 秒ごとの静止画」の切り出し元です。動画がない（音声のみの）回は mp4 を省略できます（VTT だけでまとめを作れます）。
+> mp4 は「10 秒ごとの静止画」の切り出し元です。動画がない（音声のみの）回は mp4 なしで進められます（VTT だけでまとめを作れます）。
 
 ---
 
@@ -54,53 +51,36 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 ---
 
-### 3. publish.sh を実行する
+### 3. Claude Code にエピソード公開を頼む
+
+**Claude デスクトップアプリ**を開き、「Code」タブでこのリポジトリ（`~/src/realtech-radio`）を選んで、こう伝える（エピソード番号とファイルの場所は実際のものに置き換え）：
+
+> ep0007 を公開したい。
+> 編集後の音声は ~/Downloads/○○○.m4a、動画は ~/Downloads/○○○.mp4、
+> 話者分離 VTT は ~/Downloads/○○○.vtt。
+
+あとは Claude Code が順に進めてくれる：
+
+1. `./scripts/publish.sh` を実行（m4a を R2 にアップロード、mp4 から 10 秒ごとに静止画を切り出し、`meta.yaml` / `shownotes.md` のテンプレートを生成。再生時間・ファイルサイズ・音声 URL は自動入力）
+2. VTT（＋静止画）から番組概要・今回のポイント・リンクを生成して `shownotes.md` に反映
+3. タイトル・説明・登壇者（工藤以外）など、足りない情報は Claude Code のほうから質問してくるので、答える
+4. `meta.yaml` / `shownotes.md` を仕上げて、コミット → push
+5. まとめが終わったら、切り出した静止画フォルダを削除（PC にノイズを溜めないため）
+
+push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更新される。Spotify・Apple Podcasts は次回のクロールで自動取得する（数時間以内）。
+
+> 💡 同じエピソード番号でやり直しても大丈夫です。記入済みの内容（`meta.yaml` の title / description、`shownotes.md` 全体）は守られ、音声を差し替えた場合は再生時間などの機械計算欄だけ新しい音声に合わせて自動更新されます。
+
+#### 参考：ターミナルで手動実行する場合
+
+publish.sh を自分で実行することもできる：
 
 ```bash
 cd ~/src/realtech-radio
-./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
+./scripts/publish.sh 0007 ~/Downloads/（編集後の音声）.m4a ~/Downloads/（動画）.mp4
 ```
 
-（mp4 がない回は 3 つ目の引数を省略：`./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a`）
-
-> 💡 ターミナル操作に不安があれば、ここも Claude Code に頼めます：
-> 「ep0007 を公開したい。m4a は ~/Downloads/realtech_radio_7.m4a、mp4 は ~/Downloads/realtech_radio_7.mp4。publish.sh を実行して」
-
-**スクリプトが自動でやること：**
-
-1. m4a を R2 にアップロード（`episodes/0007.m4a`）
-2. mp4 から 10 秒ごとに静止画（JPEG）を切り出し（`~/Downloads/realtech-frames-0007/`）
-3. `episodes/0007/meta.yaml` を作成（audio_url / file_size / duration（再生時間）は自動入力）
-4. `episodes/0007/shownotes.md` のテンプレートを作成
-
-> 同じエピソード番号で再実行しても、記入済みの内容（`meta.yaml` の title / description、`shownotes.md` 全体）は守られます。音声を差し替えたいときはそのまま再実行すればOK：m4a が再アップロードされ、duration / file_size など機械が計算する欄だけ新しい音声に合わせて自動更新されます。
-
----
-
-### 4. Claude Code に VTT を渡してまとめを作る
-
-話者分離済みの **VTT** を Claude Code に渡す。さらに手順 3 で切り出した **静止画**（`~/Downloads/realtech-frames-0007/`）も渡すと、スライドや画面共有の内容も踏まえた精度の高いまとめになる。番組概要・今回のポイント・リンクを作ってもらい、`shownotes.md` に反映してもらう。
-
-登壇者クレジット（工藤以外）は、Claude Code に「今回の登壇者は〇〇」と伝えれば追記してくれる。
-
-**まとめが終わったら、切り出した静止画をローカルから削除する**（PC にノイズを溜めないため）。Claude Code に「静止画フォルダを削除して」と頼んでもOK。削除コマンドは publish.sh の最後にも表示されます：
-
-```bash
-rm -rf ~/Downloads/realtech-frames-0007
-```
-
----
-
-### 5. Claude Code に頼んで仕上げ、公開する
-
-ここは自分でファイルを直接編集する必要はありません。**Claude Code に自然言語で頼めば対応してくれます**（足りない情報は Claude Code のほうから聞いてくれます）。たとえばこう伝えます：
-
-> ep0007 を公開したい。タイトルは「〇〇」、説明は「〇〇」。meta.yaml と shownotes を仕上げて、コミットして push して。
-
-- `meta.yaml` の title / description / 収録日、`shownotes.md` の登壇者などは、Claude Code が聞いてきたら答えるだけでOK（尺（duration）は publish.sh が音声から自動入力済みです）
-- 仕上がったら「コミットして push して」と頼めば、`git push` まで実行してくれます
-
-push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更新されます。Spotify・Apple Podcasts は次回のクロールで自動取得します（数時間以内）。
+（mp4 がない回は 3 つ目の引数を省略）。実行後にやることは、スクリプトの完了メッセージに表示される。
 
 ---
 
@@ -117,31 +97,23 @@ push されると GitHub Actions が起動し、約 1 分で `feed.xml` が更�
 
 ## トラブルシューティング
 
-### aws / ffmpeg コマンドが見つからない
+### aws / ffmpeg / gh コマンドが見つからないと言われる
 
-セットアップスクリプトを実行する（未導入のものだけ入れてくれる）：
-
-```bash
-./scripts/setup.sh
-```
+Claude Code にそのまま「setup.sh を実行して」と頼めばOK（未導入のものだけ入れてくれる）。
 
 > **必要なツールは 3 つだけ**: `aws`（R2 へのアップロード）・`ffmpeg`（静止画切り出し・再生時間の自動計算）・`gh`（GitHub 認証）。いずれも setup.sh が自動で導入します。文字起こしは共有される VTT を使うため、WhisperKit などの文字起こしツールは不要です。
 
 ### 静止画を切り出さずに公開したい（音声のみの回）
 
-mp4 を渡さずに publish.sh を実行すると、静止画の切り出しをスキップして VTT だけで進められます：
-
-```bash
-./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a
-```
+Claude Code に「動画はなし」と伝えるだけでOK。VTT だけでまとめを作れます。
 
 ### 設定ファイルが見つからないと言われる
 
-`~/.config/realtech-radio/config` が必要。作り方は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」にある）。
+初期設定（`~/.config/realtech-radio/config` の作成）がまだ終わっていません。[ONBOARDING.md](./ONBOARDING.md) の手順 4 をターミナルで行ってください（値は 1Password の「realtech-radio 配信用」にある。**Claude Code のチャットには貼らないこと**）。
 
 ### R2アップロードが失敗する
 
-使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する。
+エラーメッセージを Claude Code がそのまま読んで原因を教えてくれます。認証情報の期限切れが疑われる場合は配信者（管理者）に連絡してください。管理者は使用中のAPIトークン（管理者用 `realtech-radio-upload` ／ 編集者共有用 `realtech-radio-backoffice`）の有効期限・権限を確認する：
 
 Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
@@ -153,4 +125,22 @@ Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 |---|---|---|
 | エピソード番号 | 4桁ゼロ埋め | `0007`, `0008` |
 | R2上のファイル名 | `episodes/{番号}.m4a` | `episodes/0007.m4a` |
-| ローカルの m4a / mp4 / vtt | 自由（任意） | `realtech_radio_7.m4a` / `.mp4` / `.vtt` |
+| ローカルの m4a / mp4 / vtt | 自由 | Zoom のダウンロード名のままでOK |
+
+---
+
+## 用語集（イメージ優先）
+
+> ⚠️ この用語集は、非エンジニアがイメージを掴むことを最優先にしています。**正確さよりも分かりやすさを優先している**ため、厳密な定義とは異なる部分があります。
+
+- **リポジトリ** — GitHub（インターネット上の共有置き場）にある、この番組の「共有フォルダ」。エピソードの情報はここに追加していく
+- **ターミナル** — Mac に文字で指示を出すためのアプリ。普段の公開作業では基本的に使わない（Claude デスクトップアプリに頼めばOK）
+- **音声 .m4a** — 音声ファイルの形式のひとつ。iPhone のボイスメモと同じ仲間で、編集後そのまま配信に使う
+- **動画 .mp4** — 動画ファイルの定番形式。ここでは「10 秒ごとの静止画」を切り出す元ネタとして使う
+- **話者分離 VTT** — 「誰が・いつ・何を話したか」が書かれた文字起こしファイル。Zoom のクラウド録画が自動で作ってくれる
+- **RSSフィード** — 番組の最新情報を配信アプリに知らせる「新聞の見出し一覧」のような仕組み。Spotify や Apple Podcasts はこれを定期的に読みに来る
+- **feed.xml** — RSSフィードの実体となる「番組の目次ファイル」。新しいエピソードはここに載ることで世界に配信される
+- **GitHub Actions** — GitHub に備わっている「自動お手伝いロボット」。公開（push）すると、裏で自動的に feed.xml を作り直してくれる
+- **aws コマンド** — 音声を倉庫（Cloudflare R2）にアップロードするための道具
+- **ffmpeg コマンド** — 動画から静止画を切り出したり、音声の長さを測ったりする道具。音声・動画の万能ナイフ
+- **gh コマンド** — GitHub と自分の Mac をつなぐための道具。ログイン（認証）に使う
