@@ -2,7 +2,7 @@
 
 # リアルテックラジオ 新エピソード公開スクリプト
 # Usage: ./scripts/publish.sh <episode_number> <m4a_file> [mp4_file]
-# Example: ./scripts/publish.sh 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4
+# Example: ./scripts/publish.sh 0007 ~/Downloads/<編集後の音声>.m4a ~/Downloads/<動画>.mp4
 #
 # m4a: R2 にアップロードする配信用音声。
 # mp4: 任意。渡すと 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
@@ -23,7 +23,7 @@ SNAPSHOT_INTERVAL=10  # 秒。mp4 から静止画を切り出す間隔
 # === 引数の解析 ===
 if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
   echo "Usage: $0 <episode_number> <m4a_file> [mp4_file]"
-  echo "Example: $0 0007 ~/Downloads/realtech_radio_7.m4a ~/Downloads/realtech_radio_7.mp4"
+  echo "Example: $0 0007 ~/Downloads/<編集後の音声>.m4a ~/Downloads/<動画>.mp4"
   exit 1
 fi
 
