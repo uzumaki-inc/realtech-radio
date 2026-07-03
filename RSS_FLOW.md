@@ -10,9 +10,11 @@
 └─────────────────────────────────────────────────────────────────┘
 
 【編集者の作業】
-  収録音声 (.m4a) ──(publish.sh)──→ Cloudflare R2 にアップロード（音声本体の置き場所はここ）
+  収録音声 (.m4a) ──(publish.sh)──→ Cloudflare R2 にアップロード（配信されるのはこれだけ）
                                         └→ 公開URL（https://pub-....r2.dev/episodes/0007.m4a）を
                                            meta.yaml の audio_url に自動記入
+  動画 (.mp4)     ──(publish.sh)──→ ローカルで静止画を切り出すだけ（アップロードしない。まとめ後に削除）
+  話者分離 (.vtt) ──(Claude Code)──→ shownotes.md の元ネタ（アップロードしない）
 
   episodes/0007/
   ├── meta.yaml         ← 番組タイトル、公開日、audio_url（= R2 の音声URL）など（publish.sh が下書きを自動生成）
