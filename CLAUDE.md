@@ -122,3 +122,20 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 認証情報の受け渡し・設定手順は [ONBOARDING.md](./ONBOARDING.md) を参照（値は 1Password の「realtech-radio 配信用」）。
 
 > 文字起こしは共有される話者分離済み VTT を使うため、Whisper などの文字起こしツールは不要。
+
+### gitにpushする方法
+認証は以下の2系統がありますが、編集メンバーの利便性を考慮の上でAを採用
+
+A. HTTPS + gh（GitHub CLI）認証 ← このプロジェクトでは推奨
+- gh auth login を実行 → ブラウザが開いてログイン＆承認するだけ。
+- SSH 鍵の生成・登録は一切不要。裏で OAuth トークンが安全に保存され、git push の認証もこれが肩代わりします。
+- この番組は元々 gh を使う前提（CLAUDE.md のローカル環境に記載）なので、編集メンバーにも gh auth login を案内するのが一番シンプルです。非エンジニア＋Claude Code 前提なら特にこれ。
+
+B. SSH 鍵を登録する方式
+- ローカルで鍵を生成（ssh-keygen）→ 公開鍵を GitHub アカウントの Settings → SSH keys に登録。
+- リポジトリを SSH URL（git@github.com:...）で clone している場合はこちら。
+- こちらを選ぶなら「GitHub に鍵登録が必要」というのはその通りです。
+
+整理すると
+-「鍵登録が必ず要るか？」→ いいえ。 gh auth login（HTTPS）を使えば鍵登録なしで push できます。
+- どちらの方式でも、共通で必要なのは「そのメンバーが Collaborator として招待を承諾済みであること」だけです。認証が通っても招待されていなければ push は弾かれます。
