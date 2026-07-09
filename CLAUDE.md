@@ -126,7 +126,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 ### gitにpushする方法
 認証は以下の2系統がありますが、編集メンバーの利便性を考慮の上でAを採用
 
-A. HTTPS + gh（GitHub CLI）認証 ← このプロジェクトでは推奨
+A. HTTPS + gh（GitHub CLI）認証
 - gh auth login を実行 → ブラウザが開いてログイン＆承認するだけ。
 - SSH 鍵の生成・登録は一切不要。裏で OAuth トークンが安全に保存され、git push の認証もこれが肩代わりします。
 - この番組は元々 gh を使う前提（CLAUDE.md のローカル環境に記載）なので、編集メンバーにも gh auth login を案内するのが一番シンプルです。非エンジニア＋Claude Code 前提なら特にこれ。
