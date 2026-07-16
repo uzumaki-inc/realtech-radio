@@ -1,31 +1,28 @@
-## 番組概要
+# #7 エンジニアに頼らない配信（前編）｜お惣菜屋さんで分かるPodcast配信の裏側
 
-「エンジニアに頼らずにPodcastを配信できるようになりたい」——今回はそんなテーマの前編。工藤がこれまで自分のPCとClaude Codeで回していた番組配信を、文系のバックオフィスメンバーにも引き継げるように、"配信の仕組み"そのものを噛み砕いて解説します。
+## 💡 エピソード概要
 
-キーワードは**卸売専門のお惣菜屋さん**。GitHub、ターミナル、Cloudflare、RSS、Spotify／Apple Podcasts……と横文字が並ぶ配信の全体像を、レシピ集・台所・保冷ショーケース・お品書き・百貨店に一つずつ当てはめながら、地図を描くように整理していきます。パーソナリティに加わったきのぴー、社内で一番ちゃんとしたエンジニアのはっしー（橋本）を交えた3人でお届けします。
+「エンジニアに頼らずにPodcastを配信できるようになりたい」——今回はそんなテーマの前編。
 
-## 今回のポイント
+GitHub、ターミナル、Cloudflare、RSSと横文字が並ぶPodcast配信の全体像を、「卸売専門のお惣菜屋さん」にまるごと例えて、非エンジニアにもわかる地図として描き直します。
 
-- **配信＝卸売のお惣菜屋さん**：作った音声（お惣菜）を自分の台所で仕込み、保冷ショーケースに並べ、お品書き（メニュー表）に「本日の新作：第7回」と書き足す。百貨店（Spotify／Apple）がそのメニュー表を毎日見に来て自分の売り場に並べ、リスナーはそこで見つけて再生する。リスナーは店頭で直接買わない「卸売専門」がイメージのコツ
-- **GitHub＝レシピ集**：エンジニアが書いたコード（レシピ）を保管・共有する場所。「誰がいつ何を変えたか」の履歴が追え、醤油派 vs マヨネーズ派の“コンフリクト”も見える化して調整できる。この番組の配信リポジトリ自体も公開されていて、番組内でも「興味ある人は見てOK」と案内
-- **ターミナル＝黒い画面**：コンピュータ黎明期からずっとある、文字だけで操作する世界（CUI）。GitHubのレシピを自分の台所（PC）に「持って来い」と呪文（コマンド）で落としてくる道具
-- **Claude Code はデスクトップアプリで**：ターミナルで呪文を打たなくても、Claude Desktopアプリの「Code」タブでフォルダを指定するだけで動かせる。非エンジニアでも入り口まで来ればゴールは一気に近い
-- **ツールは変わっても仕組みは変わらない**：Podcast歴20年のきのぴー曰く、いろんなツールは移り変わるが土台のRSSやGitの考え方は普遍的。全体の仕組みさえ掴めば、ツールの変化は怖くない
-- **次回・後編へ**：ショーケースの鍵（秘密の設定）や調理道具の中身、そして「配信当日って実際なにするの？」は後編で
+- 配信＝卸売のお惣菜屋さん：台所（PC）で仕込み、保冷ショーケース（Cloudflare）に並べ、お品書き（RSS）を百貨店（Spotify／Apple）が毎日見に来る
+- GitHub＝レシピ集、ターミナル＝黒い画面。エンジニア用語を一つずつ生活の道具に置き換える
+- Claude Codeはデスクトップアプリから使えば、非エンジニアでもゴールは一気に近い
+- ツールは変わっても仕組みは変わらない——Podcast歴20年きのぴーの実感
 
-## クレジット
+## 🔗 リンク
 
-- 工藤：株式会社UZUMAKI 代表取締役 ／ X([@ToraDady](https://x.com/ToraDady))
-- きのぴー：X([@sseze](https://x.com/sseze))
-- はっしー（橋本）：X([@chrhsmt](https://x.com/chrhsmt))
+📝 もっと詳しく（note）：準備中
+
+🔗 登場：[GitHub](https://github.com) / [Claude Code](https://www.claude.com/product/claude-code) / [Cloudflare](https://www.cloudflare.com) / [Spotify for Creators](https://creators.spotify.com) / [リアルテックラジオ 配信リポジトリ](https://github.com/uzumaki-inc/realtech-radio)　他
+
+## 🎙 クレジット
+
+出演：工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）／ きのぴー（[X](https://x.com/sseze)）／ はっしー（[X](https://x.com/chrhsmt)）
 
 制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
 
-## リンク
+## 📻 番組概要
 
-- [リアルテックラジオ 配信リポジトリ（GitHub）](https://github.com/uzumaki-inc/realtech-radio)
-- [GitHub](https://github.com)
-- [Claude Code](https://www.claude.com/product/claude-code)
-- [Cloudflare](https://www.cloudflare.com)
-- [Spotify for Creators](https://creators.spotify.com)
-- [Apple Podcasts](https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088)
+エンジニアが普段何を考え、どんなことにワクワクしているのかを、非エンジニアの視点で紐解いていくラジオ。文系リスナーが社内のエンジニアの会話を理解できるように翻訳しつつ、エンジニアが共感できる学びのきっかけになるコンテンツです。
