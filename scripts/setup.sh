@@ -46,7 +46,7 @@ install_if_missing() {
 }
 
 echo "▶ Step 2/6: 必要なツールを確認中..."
-install_if_missing ffmpeg ffmpeg  # mp4からの静止画切り出し・再生時間の自動計算
+install_if_missing ffmpeg ffmpeg  # 配信用mp3への変換・mp4からの静止画切り出し・再生時間の自動計算
 install_if_missing aws awscli     # R2へのアップロード
 install_if_missing gh gh          # GitHub の認証（公開時の git push 用）
 echo ""

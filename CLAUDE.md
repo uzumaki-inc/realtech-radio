@@ -66,7 +66,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 詳細は `OPERATION.md` を参照。概要は以下の通り：
 
 1. `./scripts/publish.sh 0007 ~/Downloads/file.m4a ~/Downloads/file.mp4` を実行
-   - m4aをR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
+   - m4aをmp3に変換してR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / description を記入（手動。duration は publish.sh が自動入力）
@@ -76,7 +76,8 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 
 ### エピソード番号規則
 - **4桁ゼロ埋め**（例: `0001`, `0002`, `0003`）
-- R2ファイル名: `episodes/0007.m4a`（配信音声は m4a を直接ホスト。mp3 変換はしない）
+- R2ファイル名: `episodes/0007.mp3`（配信音声は mp3 に統一。Podcast アプリの互換性が最も高いため）
+- 入力（編集者が渡す音声）は `.m4a` のまま。mp3 への変換は publish.sh が自動で行う
 
 ---
 
@@ -112,7 +113,7 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 ## ローカル環境（作業Mac）
 
 - **AWS CLI**: `brew install awscli`（R2 アップロード用）
-- **ffmpeg**: Homebrew でインストール（mp4 からの静止画切り出し・再生時間の自動計算用）
+- **ffmpeg**: Homebrew でインストール（mp3 への変換・mp4 からの静止画切り出し・再生時間の自動計算用）
 - **GitHub CLI（gh）**: Homebrew でインストール（公開時の git push 認証用）
 - **リポジトリの場所**: `~/src/realtech-radio`（GitHub: uzumaki-inc/realtech-radio）
 

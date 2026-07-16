@@ -14,7 +14,7 @@
 編集者：音声 m4a を編集（BGM 付けなど）
     ↓
 編集者：Claude Code に「ep0007 を公開したい」と頼む
-    ↓ Claude Code が publish.sh を実行（m4a を R2 アップロード・静止画切り出し・テンプレ生成）
+    ↓ Claude Code が publish.sh を実行（m4a を mp3 に変換して R2 アップロード・静止画切り出し・テンプレ生成）
     ↓ VTT（＋静止画）からまとめを生成し、meta.yaml / shownotes.md を仕上げて公開（git push）
 GitHub Actions が feed.xml を自動更新（自動）
     ↓
@@ -47,7 +47,7 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 ### 2. 編集者が音声を編集する
 
-音声 `.m4a` に**手動で編集を加える**（BGM を付ける、頭出しや不要部分のカットなど）。**編集後の m4a を配信に使う**。
+音声 `.m4a` に**手動で編集を加える**（BGM を付ける、頭出しや不要部分のカットなど）。**編集後の m4a が配信音声のもとになる**（配信用の mp3 への変換は publish.sh が自動で行うので、手元で変換する必要はない）。
 
 ---
 
@@ -61,7 +61,7 @@ Spotify / Apple Podcasts が自動取得（自動）
 
 あとは Claude Code が順に進めてくれる：
 
-1. `./scripts/publish.sh` を実行（m4a を R2 にアップロード、mp4 から 10 秒ごとに静止画を切り出し、`meta.yaml` / `shownotes.md` のテンプレートを生成。再生時間・ファイルサイズ・音声 URL は自動入力）
+1. `./scripts/publish.sh` を実行（m4a を配信用の mp3 に変換して R2 にアップロード、mp4 から 10 秒ごとに静止画を切り出し、`meta.yaml` / `shownotes.md` のテンプレートを生成。再生時間・ファイルサイズ・音声 URL は自動入力）
 2. VTT（＋静止画）から番組概要・今回のポイント・リンクを生成して `shownotes.md` に反映
 3. タイトル・説明・登壇者（工藤以外）など、足りない情報は Claude Code のほうから質問してくるので、答える
 4. `meta.yaml` / `shownotes.md` を仕上げて、コミット → push
@@ -89,7 +89,7 @@ cd ~/src/realtech-radio
 | 確認内容 | URL |
 |---|---|
 | RSSフィード | https://podcast.uzumaki-inc.jp/feed.xml |
-| 音声ファイル（例）| https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.m4a |
+| 音声ファイル（例）| https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.mp3 |
 | Spotify | https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p |
 | Apple Podcasts | https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088 |
 
@@ -101,7 +101,7 @@ cd ~/src/realtech-radio
 
 Claude Code にそのまま「setup.sh を実行して」と頼めばOK（未導入のものだけ入れてくれる）。
 
-> **必要なツールは 3 つだけ**: `aws`（R2 へのアップロード）・`ffmpeg`（静止画切り出し・再生時間の自動計算）・`gh`（GitHub 認証）。いずれも setup.sh が自動で導入します。文字起こしは共有される VTT を使うため、WhisperKit などの文字起こしツールは不要です。
+> **必要なツールは 3 つだけ**: `aws`（R2 へのアップロード）・`ffmpeg`（mp3 への変換・静止画切り出し・再生時間の自動計算）・`gh`（GitHub 認証）。いずれも setup.sh が自動で導入します。文字起こしは共有される VTT を使うため、WhisperKit などの文字起こしツールは不要です。
 
 ### 静止画を切り出さずに公開したい（音声のみの回）
 
@@ -124,7 +124,7 @@ Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 | 項目 | 規則 | 例 |
 |---|---|---|
 | エピソード番号 | 4桁ゼロ埋め | `0007`, `0008` |
-| R2上のファイル名 | `episodes/{番号}.m4a` | `episodes/0007.m4a` |
+| R2上のファイル名 | `episodes/{番号}.mp3` | `episodes/0007.mp3` |
 | ローカルの m4a / mp4 / vtt | 自由 | Zoom のダウンロード名のままでOK |
 
 ---
@@ -135,12 +135,13 @@ Cloudflare → R2 Object Storage → Overview → Account Details → Manage
 
 - **リポジトリ** — GitHub（インターネット上の共有置き場）にある、この番組の「共有フォルダ」。エピソードの情報はここに追加していく
 - **ターミナル** — Mac に文字で指示を出すためのアプリ。普段の公開作業では基本的に使わない（Claude デスクトップアプリに頼めばOK）
-- **音声 .m4a** — 音声ファイルの形式のひとつ。iPhone のボイスメモと同じ仲間で、編集後そのまま配信に使う
+- **音声 .m4a** — 音声ファイルの形式のひとつ。iPhone のボイスメモと同じ仲間で、編集して配信音声のもとにする（配信用の mp3 への変換は自動）
+- **音声 .mp3** — 音声ファイルの最も定番の形式。どの Podcast アプリでも確実に再生できるので、実際に配信するのはこの形式に統一している
 - **動画 .mp4** — 動画ファイルの定番形式。ここでは「10 秒ごとの静止画」を切り出す元ネタとして使う
 - **話者分離 VTT** — 「誰が・いつ・何を話したか」が書かれた文字起こしファイル。Zoom のクラウド録画が自動で作ってくれる
 - **RSSフィード** — 番組の最新情報を配信アプリに知らせる「新聞の見出し一覧」のような仕組み。Spotify や Apple Podcasts はこれを定期的に読みに来る
 - **feed.xml** — RSSフィードの実体となる「番組の目次ファイル」。新しいエピソードはここに載ることで世界に配信される
 - **GitHub Actions** — GitHub に備わっている「自動お手伝いロボット」。公開（push）すると、裏で自動的に feed.xml を作り直してくれる
 - **aws コマンド** — 音声を倉庫（Cloudflare R2）にアップロードするための道具
-- **ffmpeg コマンド** — 動画から静止画を切り出したり、音声の長さを測ったりする道具。音声・動画の万能ナイフ
+- **ffmpeg コマンド** — 音声を配信用の mp3 に変換したり、動画から静止画を切り出したり、音声の長さを測ったりする道具。音声・動画の万能ナイフ
 - **gh コマンド** — GitHub と自分の Mac をつなぐための道具。ログイン（認証）に使う

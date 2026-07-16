@@ -4,7 +4,8 @@
 # Usage: ./scripts/publish.sh <episode_number> <m4a_file> [mp4_file]
 # Example: ./scripts/publish.sh 0007 ~/Downloads/<編集後の音声>.m4a ~/Downloads/<動画>.mp4
 #
-# m4a: R2 にアップロードする配信用音声。
+# m4a: 編集後の音声。mp3 に変換して R2 にアップロードします
+#      （Podcast アプリの互換性が最も高い mp3 を配信フォーマットに揃えるため）。
 # mp4: 任意。渡すと 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
 #      切り出した画像はローカル一時フォルダに置き、まとめが終わったら削除してください
 #      （次回このスクリプトを実行すると同じ番号の一時フォルダは自動で作り直します）。
@@ -47,6 +48,16 @@ EPISODE_DIR="$REPO_ROOT/$EPISODE_REL"
 DOWNLOAD_DIR=$(dirname "$M4A_FILE")
 FRAMES_DIR="$DOWNLOAD_DIR/realtech-frames-$EPISODE_NUM"
 
+# 配信音声の置き場所は一度だけ決める。アップロード先（R2）と meta.yaml に書く公開 URL が
+# ここから両方派生するので、片方だけズレて feed.xml が 404 を指す事故が起きない
+AUDIO_KEY="episodes/$EPISODE_NUM.mp3"
+AUDIO_URL="$PUBLIC_BASE_URL/$AUDIO_KEY"
+
+# 変換した mp3 はアップロードすれば用済みなので、一時フォルダに作って終了時に消す
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+MP3_FILE="$TMP_DIR/$EPISODE_NUM.mp3"
+
 # === 実行前チェック（環境がそろっているか） ===
 die_setup() {
   echo "❌ $1"
@@ -80,7 +91,7 @@ if [ -z "$(aws configure get aws_access_key_id --profile "$PROFILE" 2>/dev/null)
   die_setup "AWS CLI の $PROFILE プロファイルが未設定です。"
 fi
 
-# ffmpeg（静止画切り出し）と同梱の ffprobe（再生時間の自動計算）は常に必要
+# ffmpeg（mp3 への変換・静止画切り出し）と同梱の ffprobe（再生時間の自動計算）は常に必要
 if ! command -v ffmpeg > /dev/null 2>&1 || ! command -v ffprobe > /dev/null 2>&1; then
   die_setup "ffmpeg が見つかりません。"
 fi
@@ -93,10 +104,11 @@ fi
 echo "🎙️  エピソード $EPISODE_NUM の公開処理を開始します..."
 echo ""
 
-# === Step 1: m4a を R2 にアップロード ===
-echo "▶ Step 1/3: 音声（m4a）を R2 にアップロード中..."
-aws s3 cp "$M4A_FILE" \
-  "s3://$BUCKET/episodes/$EPISODE_NUM.m4a" \
+# === Step 1: m4a を mp3 に変換して R2 にアップロード ===
+echo "▶ Step 1/3: 音声を mp3 に変換して R2 にアップロード中..."
+ffmpeg -i "$M4A_FILE" -c:a libmp3lame -q:a 2 "$MP3_FILE" -y -loglevel error
+aws s3 cp "$MP3_FILE" \
+  "s3://$BUCKET/$AUDIO_KEY" \
   --profile "$PROFILE" \
   --endpoint-url "$R2_ENDPOINT"
 echo "✅ アップロード完了"
@@ -122,11 +134,10 @@ fi
 echo "▶ Step 3/3: エピソードファイルを作成中..."
 mkdir -p "$EPISODE_DIR"
 
-# ファイルサイズ取得（配信する m4a のバイト数）
-FILE_SIZE=$(wc -c < "$M4A_FILE" | tr -d ' ')
-AUDIO_URL="$PUBLIC_BASE_URL/episodes/$EPISODE_NUM.m4a"
+# ファイルサイズ取得（配信する mp3 のバイト数。RSS の enclosure length になる）
+FILE_SIZE=$(wc -c < "$MP3_FILE" | tr -d ' ')
 
-# 再生時間（duration）を m4a から自動計算する（ffprobe は ffmpeg に同梱）
+# 再生時間（duration）を元音源から自動計算する（ffprobe は ffmpeg に同梱）
 DURATION="00:00:00"
 DURATION_SECS=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$M4A_FILE" 2>/dev/null | cut -d. -f1)
 if [[ "$DURATION_SECS" =~ ^[0-9]+$ ]]; then
@@ -137,7 +148,7 @@ else
 fi
 
 # meta.yaml 作成。既にある場合は、人が記入する欄（title / description など）を守りつつ、
-# 音声の差し替えに備えて機械が計算する欄だけ今回の m4a に合わせて更新する
+# 音声の差し替えに備えて機械が計算する欄だけ今回の音声に合わせて更新する
 if [ -f "$EPISODE_DIR/meta.yaml" ]; then
   sed -i '' \
     -e "s|^duration: .*|duration: \"$DURATION\"|" \
