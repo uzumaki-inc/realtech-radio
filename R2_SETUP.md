@@ -33,8 +33,8 @@
   ```
   realtech-radio-audio/
   └── episodes/
-      ├── 0001.mp3   ← 旧フロー時代のエピソード（0001〜0006）は mp3
-      ├── 0007.m4a   ← 現行フローは m4a を直接ホスト
+      ├── 0001.mp3   ← 配信音声は mp3 に統一（publish.sh が m4a から自動変換）
+      ├── 0007.mp3
       └── ...
   ```
 
@@ -122,8 +122,8 @@ publish.sh（AWS CLI）でアップロードするための S3 互換トーク�
 - **AWS CLI**:
 
   ```bash
-  aws s3 cp 0007.m4a \
-    s3://realtech-radio-audio/episodes/0007.m4a \
+  aws s3 cp 0007.mp3 \
+    s3://realtech-radio-audio/episodes/0007.mp3 \
     --profile r2 \
     --endpoint-url https://<ACCOUNT_ID>.r2.cloudflarestorage.com
   ```
@@ -131,7 +131,7 @@ publish.sh（AWS CLI）でアップロードするための S3 互換トーク�
 **リスナーに配信される URL は公開 URL（Public Development URL）のほうです**：
 
 ```
-https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.m4a
+https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.mp3
 ```
 
 S3 エンドポイント（`<ACCOUNT_ID>.r2.cloudflarestorage.com`）は認証付きのアップロード用で、リスナーは再生できません。`meta.yaml` の `audio_url` には必ず公開 URL を書きます（publish.sh が自動記入するので、通常は意識不要）。

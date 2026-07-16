@@ -10,8 +10,8 @@
 └─────────────────────────────────────────────────────────────────┘
 
 【編集者の作業】
-  収録音声 (.m4a) ──(publish.sh)──→ Cloudflare R2 にアップロード（配信されるのはこれだけ）
-                                        └→ 公開URL（https://pub-....r2.dev/episodes/0007.m4a）を
+  収録音声 (.m4a) ──(publish.sh)──→ mp3 に変換して Cloudflare R2 にアップロード（配信されるのはこれだけ）
+                                        └→ 公開URL（https://pub-....r2.dev/episodes/0007.mp3）を
                                            meta.yaml の audio_url に自動記入
   動画 (.mp4)     ──(publish.sh)──→ 切り出した静止画を .vtt とセットで Claude Code に食わせ、まとめ後に削除
   話者分離 (.vtt) ──(Claude Code)──→ shownotes.md の元ネタ（.mp4同様にアップロードしない）
@@ -100,7 +100,7 @@
      </rss>
 ```
 
-> 例は ep0001（mp3 時代）のもの。ep0007 以降の現行フローは m4a ですが、`generate_feed.py` がファイル形式に応じた MIME タイプを自動判定するため、どちらも同じ仕組みで配信されます。
+> 例は ep0001 のもの。配信音声は全エピソード mp3 に統一しているため、`<enclosure>` の MIME タイプは `audio/mpeg` になります（`generate_feed.py` が `audio_url` の拡張子から自動判定します）。
 
 ## 手動 vs 自動化の比較
 
