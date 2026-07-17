@@ -13,11 +13,11 @@ Alipayミニアプリ、そして旅の相棒となったClaudeやGeminiを駆�
 
 ## 🔗 リンク
 
-📝 もっと詳しく（note）：準備中
+📝 もっと詳しく（note）：[文系リスナーと紐解く「リアルテックラジオ」#4｜UZUMAKI](https://note.com/uzumaki_inc/n/ndab5b89a13c4)
 
-🔗 登場：[Povo](https://povo.au.com) / [iFLYTEK](https://www.iflytek.com) / Inno100（Kickstarter中国旗艦店）/ [Kickstarter](https://www.kickstarter.com) / [深水埗](https://ja.wikipedia.org/wiki/深水埗区)
+🔗 登場：[Povo](https://povo.au.com) / [iFLYTEK](https://www.iflytek.com) / [INNO100（Kickstarter中国旗艦店）](https://inno100.ai/) / [Kickstarter](https://www.kickstarter.com) / [深水埗](https://ja.wikipedia.org/wiki/深水埗区)
 
-🎧 関連回：#3 深圳2026（前編）ロボタクシーとロボ喫茶「とりあえずやっちゃう」街の今
+🎧 関連回：[#3 深圳2026（前編）ロボタクシーとロボ喫茶「とりあえずやっちゃう」街の今](https://open.spotify.com/episode/3TzZ2prSxQxvAOYITAYA48)
 
 ## 🎙 クレジット
 

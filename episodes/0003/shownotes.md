@@ -17,7 +17,7 @@
 
 🔗 登場：[Pony.ai](https://pony.ai) / [華強北](https://ja.wikipedia.org/wiki/華強北)
 
-🎧 関連回：#4 深圳・香港2026（後編）｜荒削りな街をAIと旅する。ミニアプリだけで完結する体験
+🎧 関連回：[#4 深圳・香港2026（後編）｜荒削りな街をAIと旅する。ミニアプリだけで完結する体験](https://open.spotify.com/episode/5iUZdAiPz1KiXqxjBnyVzF)
 
 ## 🎙 クレジット
 
