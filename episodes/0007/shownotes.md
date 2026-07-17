@@ -14,7 +14,7 @@ Podcastの音源はどうやってリスナーの元に届く？
 
 📝 もっと詳しく（note）：準備中
 
-🔗 登場：RSS / [Cloudflare](https://www.cloudflare.com) / [GitHub](https://github.com) / [Claude Code](https://www.claude.com/product/claude-code) / [リアルテックラジオ 配信リポジトリ](https://github.com/uzumaki-inc/realtech-radio)　他
+🔗 登場：RSS ／ [Cloudflare](https://www.cloudflare.com) ／ [GitHub](https://github.com) ／ [Claude Code](https://www.claude.com/product/claude-code) ／ [リアルテックラジオ 配信リポジトリ](https://github.com/uzumaki-inc/realtech-radio)　他
 
 ## 🎙 クレジット
 
