@@ -1,7 +1,7 @@
-title: "#7 エンジニアに頼らない配信（前編）｜お惣菜屋さんで分かるPodcast配信の裏側"
+title: "#7 Podcast配信とRSS（前編）｜お惣菜屋さんで分かる配信の仕組み"
 date: 2026-07-16
 duration: "00:35:24"
 audio_url: "https://pub-2723121c04be418c8520405cedf4afee.r2.dev/episodes/0007.mp3"
 file_size: 32974291
-description: "「エンジニアに頼らずにPodcastを配信できるようになりたい」——今回はそんなテーマの前編。GitHub、ターミナル、Cloudflare、RSSと横文字が並ぶPodcast配信の全体像を、「卸売専門のお惣菜屋さん」にまるごと例えて、非エンジニアにもわかる地図として描き直します。"
+description: "Podcastの音源はどうやってリスナーの元に届く？「GitHubにターミナルにRSS…横文字だらけで正直よくわからない」そんな非エンジニアでも理解して発信作業を担えるよう、まずは配信の裏側を「お惣菜屋さん」に例えながら、全体像が掴めるようにわかりやすく話します。"
 explicit: false

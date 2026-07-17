@@ -1,21 +1,20 @@
-# #7 エンジニアに頼らない配信（前編）｜お惣菜屋さんで分かるPodcast配信の裏側
+# #7 Podcast配信とRSS（前編）｜お惣菜屋さんで分かる配信の仕組み
 
 ## 💡 エピソード概要
 
-「エンジニアに頼らずにPodcastを配信できるようになりたい」——今回はそんなテーマの前編。
+Podcastの音源はどうやってリスナーの元に届く？
 
-GitHub、ターミナル、Cloudflare、RSSと横文字が並ぶPodcast配信の全体像を、「卸売専門のお惣菜屋さん」にまるごと例えて、非エンジニアにもわかる地図として描き直します。
+「GitHubにターミナルにRSS…横文字だらけで正直よくわからない」そんな非エンジニアでも理解して発信作業を担えるよう、まずは配信の裏側を「お惣菜屋さん」に例えながら、全体像が掴めるようにわかりやすく話します。
 
-- 配信＝卸売のお惣菜屋さん：台所（PC）で仕込み、保冷ショーケース（Cloudflare）に並べ、お品書き（RSS）を百貨店（Spotify／Apple）が毎日見に来る
-- GitHub＝レシピ集、ターミナル＝黒い画面。エンジニア用語を一つずつ生活の道具に置き換える
-- Claude Codeはデスクトップアプリから使えば、非エンジニアでもゴールは一気に近い
-- ツールは変わっても仕組みは変わらない——Podcast歴20年きのぴーの実感
+- レシピ集（GitHub）をもとに台所（PC）で仕込み、保冷ショーケース（Cloudflare）に並べておくと、お品書き（RSS）を百貨店（Spotify／Apple）が毎日見に来る
+- ターミナル、黒い画面、コマンド、Claude Codeなど、非エンジニアには怖く見える道具の役割
+- ツールは変わっても、基本の考え方は意外と変わらない
 
 ## 🔗 リンク
 
 📝 もっと詳しく（note）：準備中
 
-🔗 登場：[GitHub](https://github.com) / [Claude Code](https://www.claude.com/product/claude-code) / [Cloudflare](https://www.cloudflare.com) / [Spotify for Creators](https://creators.spotify.com) / [リアルテックラジオ 配信リポジトリ](https://github.com/uzumaki-inc/realtech-radio)　他
+🔗 登場：RSS / [Cloudflare](https://www.cloudflare.com) / [GitHub](https://github.com) / [Claude Code](https://www.claude.com/product/claude-code) / [リアルテックラジオ 配信リポジトリ](https://github.com/uzumaki-inc/realtech-radio)　他
 
 ## 🎙 クレジット
 
