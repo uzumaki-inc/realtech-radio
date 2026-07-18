@@ -12,27 +12,33 @@ Podcastの音源はどうやってリスナーの元に届く？
 
 ## 🔗 リンク
 
-📝 もっと詳しく（note）：準備中
+【もっと詳しく（note）】　準備中
 
-🔗 登場：
+【登場】
 
-- RSS
-- Cloudflare： https://www.cloudflare.com
-- GitHub： https://github.com
-- Claude Code： https://www.claude.com/product/claude-code
-- リアルテックラジオ 配信リポジトリ： https://github.com/uzumaki-inc/realtech-radio
+RSS
 
-ほか
+Cloudflare　https://www.cloudflare.com
+
+GitHub　https://github.com
+
+Claude Code　https://www.claude.com/product/claude-code
+
+リアルテックラジオ 配信リポジトリ　https://github.com/uzumaki-inc/realtech-radio
 
 ## 🎙 クレジット
 
-出演：
+【出演】
 
-- 工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）
-- きのぴー（[X](https://x.com/sseze)）
-- はっしー（[X](https://x.com/chrhsmt)）
+工藤（株式会社UZUMAKI 代表取締役）[@ToraDady](https://x.com/ToraDady)
 
-制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
+きのぴー [@sseze](https://x.com/sseze)
+
+はっしー [@chrhsmt](https://x.com/chrhsmt)
+
+【制作】
+
+株式会社UZUMAKI　https://uzumaki-inc.jp
 
 ## 📻 番組概要
 

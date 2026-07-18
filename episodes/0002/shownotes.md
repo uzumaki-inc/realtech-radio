@@ -13,15 +13,29 @@ AIでコードが書ける時代、エンジニアの仕事は減る——ので
 
 ## 🔗 リンク
 
-📝 もっと詳しく（note）：[文系リスナーと紐解く「リアルテックラジオ」#2｜UZUMAKI](https://note.com/uzumaki_inc/n/n12f0ab7f3d63)
+【もっと詳しく（note）】　https://note.com/uzumaki_inc/n/n12f0ab7f3d63
 
-🔗 登場：[Figma](https://www.figma.com) / [Devin](https://devin.ai) / [Claude Code](https://www.claude.com/product/claude-code) / [Obsidian](https://obsidian.md)
+【登場】
+
+Figma　https://www.figma.com
+
+Devin　https://devin.ai
+
+Claude Code　https://www.claude.com/product/claude-code
+
+Obsidian　https://obsidian.md
 
 ## 🎙 クレジット
 
-出演：工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）／ たなこー（[X](https://x.com/_tanakoo)）
+【出演】
 
-制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
+工藤（株式会社UZUMAKI 代表取締役）[@ToraDady](https://x.com/ToraDady)
+
+たなこー [@_tanakoo](https://x.com/_tanakoo)
+
+【制作】
+
+株式会社UZUMAKI　https://uzumaki-inc.jp
 
 ## 📻 番組概要
 

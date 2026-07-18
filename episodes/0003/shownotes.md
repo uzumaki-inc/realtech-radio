@@ -13,17 +13,33 @@
 
 ## 🔗 リンク
 
-📝 もっと詳しく（note）：[文系リスナーと紐解く「リアルテックラジオ」#3｜UZUMAKI](https://note.com/uzumaki_inc/n/n211958216cf0)
+【もっと詳しく（note）】　https://note.com/uzumaki_inc/n/n211958216cf0
 
-🔗 登場：[Pony.ai](https://pony.ai) / [華強北](https://ja.wikipedia.org/wiki/華強北)
+【登場】
 
-🎧 関連回：[#4 深圳・香港2026（後編）｜荒削りな街をAIと旅する。ミニアプリだけで完結する体験](https://open.spotify.com/episode/5iUZdAiPz1KiXqxjBnyVzF)
+Pony.ai　https://pony.ai
+
+華強北　https://ja.wikipedia.org/wiki/華強北
+
+【関連回】
+
+#4 深圳・香港2026（後編）｜荒削りな街をAIと旅する。ミニアプリだけで完結する体験　https://open.spotify.com/episode/5iUZdAiPz1KiXqxjBnyVzF
 
 ## 🎙 クレジット
 
-出演：工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）／ きのぴー（[X](https://x.com/sseze)）／ 岸（[X](https://x.com/kefi3104)）／ 永平（[X](https://x.com/kazukinagahira)）
+【出演】
 
-制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
+工藤（株式会社UZUMAKI 代表取締役）[@ToraDady](https://x.com/ToraDady)
+
+きのぴー [@sseze](https://x.com/sseze)
+
+岸 [@kefi3104](https://x.com/kefi3104)
+
+永平 [@kazukinagahira](https://x.com/kazukinagahira)
+
+【制作】
+
+株式会社UZUMAKI　https://uzumaki-inc.jp
 
 ## 📻 番組概要
 
