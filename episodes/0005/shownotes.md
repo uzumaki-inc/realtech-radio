@@ -13,15 +13,33 @@
 
 ## 🔗 リンク
 
-📝 もっと詳しく（note）：準備中
+【もっと詳しく（note）】　準備中
 
-🔗 登場：[Obsidian](https://obsidian.md) / [Notion](https://www.notion.com) / [esa](https://esa.io) / [Evernote](https://evernote.com) / [Markdown](https://daringfireball.net/projects/markdown/)　他
+【登場】
+
+Obsidian　https://obsidian.md
+
+Notion　https://www.notion.com
+
+esa　https://esa.io
+
+Evernote　https://evernote.com
+
+Markdown　https://daringfireball.net/projects/markdown/
 
 ## 🎙 クレジット
 
-出演：工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）／ きのぴー（[X](https://x.com/sseze)）／ 岸（[X](https://x.com/kefi3104)）
+【出演】
 
-制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
+工藤（株式会社UZUMAKI 代表取締役）[@ToraDady](https://x.com/ToraDady)
+
+きのぴー [@sseze](https://x.com/sseze)
+
+岸 [@kefi3104](https://x.com/kefi3104)
+
+【制作】
+
+株式会社UZUMAKI　https://uzumaki-inc.jp
 
 ## 📻 番組概要
 
