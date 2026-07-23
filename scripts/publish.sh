@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # リアルテックラジオ 新エピソード公開スクリプト
-# Usage: ./scripts/publish.sh <episode_number> <m4a_file> [mp4_file]
+# Usage: ./scripts/publish.sh <episode_number> <m4a_file> <mp4_file | --no-video>
 # Example: ./scripts/publish.sh 0007 ~/Downloads/<編集後の音声>.m4a ~/Downloads/<動画>.mp4
 #
 # m4a: 編集後の音声。mp3 に変換して R2 にアップロードします
 #      （Podcast アプリの互換性が最も高い mp3 を配信フォーマットに揃えるため）。
-# mp4: 任意。渡すと 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
+# mp4: 10 秒ごとに静止画を切り出し、VTT とセットでまとめ生成の入力に使います。
+#      動画がない（音声のみの）回は --no-video を明示する（省略はエラー）。
 #      切り出した画像はローカル一時フォルダに置き、まとめが終わったら削除してください
 #      （次回このスクリプトを実行すると同じ番号の一時フォルダは自動で作り直します）。
 
@@ -22,9 +23,12 @@ PROFILE="r2"
 SNAPSHOT_INTERVAL=10  # 秒。mp4 から静止画を切り出す間隔
 
 # === 引数の解析 ===
-if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
-  echo "Usage: $0 <episode_number> <m4a_file> [mp4_file]"
+if [ "$#" -ne 3 ]; then
+  echo "Usage: $0 <episode_number> <m4a_file> <mp4_file | --no-video>"
   echo "Example: $0 0007 ~/Downloads/<編集後の音声>.m4a ~/Downloads/<動画>.mp4"
+  echo ""
+  echo "❌ 動画がない（音声のみの）回は、mp4 の代わりに --no-video を明示してください。"
+  echo "   （mp4 の渡し忘れのまま静止画なしで進んでしまう事故を防ぐためのルールです）"
   exit 1
 fi
 
@@ -38,8 +42,11 @@ else
 fi
 
 M4A_FILE="${2/#\~/$HOME}"          # ~ を展開
-MP4_FILE="${3:-}"
-MP4_FILE="${MP4_FILE/#\~/$HOME}"   # ~ を展開（未指定なら空のまま）
+if [ "$3" = "--no-video" ]; then
+  MP4_FILE=""
+else
+  MP4_FILE="${3/#\~/$HOME}"        # ~ を展開
+fi
 
 # どこから実行しても episodes/ がリポジトリ直下にできるよう、絶対パスで扱う
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -125,8 +132,8 @@ if [ -n "$MP4_FILE" ]; then
   echo "✅ 静止画 ${FRAME_COUNT} 枚を切り出しました: $FRAMES_DIR"
   echo ""
 else
-  echo "▶ Step 2/3: mp4 未指定のため静止画の切り出しをスキップしました"
-  echo "   （VTT だけでまとめを作る場合はこのままで問題ありません）"
+  echo "▶ Step 2/3: --no-video 指定のため静止画の切り出しをスキップしました"
+  echo "   （VTT だけでまとめを作ります）"
   echo ""
 fi
 
@@ -173,30 +180,35 @@ fi
 if [ -f "$EPISODE_DIR/shownotes.md" ]; then
   echo "⚠️  shownotes.md は既にあるため上書きしません（記入済みの内容を守るため）"
 else
+  # 番組概要の固定文は podcast.yaml の description を単一の情報源とする（二重管理による乖離を防ぐ）
+  SHOW_DESC=$(sed -n 's/^description: "\(.*\)"$/\1/p' "$REPO_ROOT/podcast.yaml")
   cat > "$EPISODE_DIR/shownotes.md" << 'SHOWNOTES'
-## 番組概要
+# <!-- TODO: #N タイトル｜サブタイトル -->
 
-<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
+## 💡 エピソード概要
 
-## 今回のポイント
+<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成（リード文＋箇条書きの見どころ） -->
 
-<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
 -
 -
 -
 
-## クレジット
+## 🔗 リンク
 
-- 工藤：株式会社UZUMAKI 代表取締役 ／ X([@ToraDady](https://x.com/ToraDady))
-- <!-- TODO: 登壇者を手入力 -->
+📝 もっと詳しく（note）：準備中
+
+🔗 登場：<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
+
+## 🎙 クレジット
+
+出演：工藤（株式会社UZUMAKI 代表取締役・[X](https://x.com/ToraDady)）／ <!-- TODO: 登壇者を編集者に確認して記入 -->
 
 制作：[株式会社UZUMAKI](https://uzumaki-inc.jp)
 
-## リンク
+## 📻 番組概要
 
-<!-- TODO: 話者分離VTT（＋静止画）をClaudeに渡して生成 -->
--
 SHOWNOTES
+  printf '%s\n' "$SHOW_DESC" >> "$EPISODE_DIR/shownotes.md"
 fi
 
 echo "✅ ファイル作成完了"
@@ -214,17 +226,18 @@ if [ -n "$MP4_FILE" ]; then
 fi
 echo "   → 生成結果を $EPISODE_REL/shownotes.md に貼り付ける"
 echo ""
-echo "2. 仕上げと公開は Claude Code に自然言語で頼めばOKです。たとえば："
+echo "2. 仕上げは Claude Code に自然言語で頼めばOKです。たとえば："
 echo ""
 echo "   「ep$EPISODE_NUM を公開したい。タイトルは「〇〇」、登壇者は〇〇。"
-echo "     meta.yaml と shownotes を仕上げて、コミットして push して」"
+echo "     meta.yaml と shownotes を仕上げて、内容を見せて」"
 echo ""
 echo "   （足りない情報は Claude Code のほうから聞いてくれます）"
 echo ""
-echo "→ push されると GitHub Actions が自動起動して feed.xml が更新されます"
+echo "3. 仕上がりを確認して「OK」と伝えると、コミット → push（公開）されます"
+echo "   （push されると GitHub Actions が自動起動して feed.xml が更新されます）"
 if [ -n "$MP4_FILE" ]; then
   echo ""
-  echo "3. まとめが終わったら、切り出した静止画をローカルから削除してください"
+  echo "4. まとめが終わったら、切り出した静止画をローカルから削除してください"
   echo "   （PCにノイズを溜めないため）："
   echo "   rm -rf \"$FRAMES_DIR\""
 fi

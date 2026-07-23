@@ -61,18 +61,39 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 
 ---
 
+## Claude への必須ルール（公開作業の進め方）
+
+このリポジトリで編集者（非エンジニアを含む）の公開作業を手伝うとき、Claude は必ず次を守ること：
+
+- **1ステップずつ進める**: 各手順の完了ごとに「何をしたか・次に何をするか」を報告し、編集者の返事を待ってから次に進む。複数手順を一気に実行しない
+- **⛔ git push（＝公開）は、編集者が内容を確認して明示的に「OK」と言うまで絶対に実行しない**。push は Podcast の世界公開を意味する。承認前に push しそうな流れになったら止まって確認する
+- 「手動で記入」とある欄（title / description / 登壇者）は、編集者に質問して答えをもらってから記入する。Claude が推測で埋めない
+- 編集者が「動画はなし」と言ったら、publish.sh の第3引数に `--no-video` を渡す
+- push は hook（`.claude/hooks/block-push.sh`）で機械的にブロックされる。編集者の「OK」を得た後に `touch .claude/.push-approved` を実行してから push する（承認は 1 回の push で使い切り）
+
+## ドキュメントマップ（各文書の役割）
+
+- **CLAUDE.md（このファイル）** = Claude への命令書。毎セッション自動ロードされ、ここのルールが最優先
+- **OPERATION.md** = 編集者（人間）向けの公開手順書。Claude は公開作業時にこれを読んで手順を把握するが、実行ペースは上記ルール（1ステップずつ・push 前承認）に従う
+- **ONBOARDING.md** = 初回セットアップ手順（人間向け）。「設定ファイルが無い」などのトラブル時に Claude が参照して編集者を誘導する
+- **R2_SETUP.md / RSS_FLOW.md / QA.md** = 管理者向け・背景説明。通常の公開作業では触らない
+
 ## エピソード公開フロー（運用）
 
 詳細は `OPERATION.md` を参照。概要は以下の通り：
 
-1. `./scripts/publish.sh 0007 ~/Downloads/file.m4a ~/Downloads/file.mp4` を実行
+1. `./scripts/publish.sh 0007 ~/Downloads/file.m4a ~/Downloads/file.mp4` を実行（動画がない回は mp4 の代わりに `--no-video` を明示。省略はエラーになる）
    - m4aをmp3に変換してR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / description を記入（手動。duration は publish.sh が自動入力）
 4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
 5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
-6. `git push` → GitHub Actionsが feed.xml を自動更新
+6. **編集者が内容を確認して「OK」と言ったら** `git push` → GitHub Actionsが feed.xml を自動更新（⛔ 承認前の push は禁止。上記「Claude への必須ルール」参照）
+
+### shownotes.md のテンプレート構成
+
+shownotes.md は **ep0007 以降の構成**（💡 エピソード概要 / 🔗 リンク / 🎙 クレジット / 📻 番組概要）で書く。雛形は publish.sh が生成するので、それを埋める。実例は `episodes/0007/shownotes.md` を正とする。
 
 ### エピソード番号規則
 - **4桁ゼロ埋め**（例: `0001`, `0002`, `0003`）
