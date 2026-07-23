@@ -129,6 +129,13 @@ def build_feed(repo_root: str) -> Element:
         # ショーノートを HTML に変換して content:encoded に入れる
         shownotes_md = load_text(os.path.join(ep["_dir"], "shownotes.md"))
         if shownotes_md:
+            # 雛形の TODO が残ったまま配信される事故を防ぐ（HTML コメントは
+            # markdown 変換を素通しして Podcast アプリの説明欄にそのまま載る）
+            if "TODO" in shownotes_md:
+                raise SystemExit(
+                    f"❌ {ep['_id']}/shownotes.md に TODO が残っています。"
+                    "記入を完了してから公開してください。"
+                )
             shownotes_html = markdown.markdown(shownotes_md)
             content_encoded = SubElement(
                 item, f"{{{CONTENT_NS}}}encoded"
