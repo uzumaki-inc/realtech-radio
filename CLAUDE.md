@@ -18,7 +18,7 @@ Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテ�
 |---|---|---|
 | RSSフィード | GitHub Pages | https://podcast.uzumaki-inc.jp/feed.xml |
 | 音声ホスティング | Cloudflare R2 | `realtech-radio-audio` バケット |
-| 音声公開URL | R2 Public URL | https://pub-2723121c04be418c8520405cedf4afee.r2.dev |
+| 音声公開URL | R2 Public URL | `scripts/publish.sh` の `PUBLIC_BASE_URL` を参照 |
 | Spotify | Spotify for Creators | https://open.spotify.com/show/0MBHbtyvPf47oPxBiR0k9p |
 | Apple Podcasts | Apple Podcast Connect | https://podcasts.apple.com/us/podcast/リアルテックラジオ/id1883493088 |
 | ドメイン | Squarespace DNS → GitHub Pages | podcast.uzumaki-inc.jp |
@@ -26,7 +26,7 @@ Claude Code / Claude Cowork が自動で読み込むプロジェクトコンテ�
 ### Cloudflare R2
 - **Account ID**: `<ACCOUNT_ID>`
 - **S3 Endpoint**: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
-- **公開URL Base**: `https://pub-2723121c04be418c8520405cedf4afee.r2.dev`
+- **公開URL Base**: `scripts/publish.sh` の `PUBLIC_BASE_URL` を参照
 - **APIトークン名**: `realtech-radio-upload`（Account API Token、Object Read & Write）
 - **AWS CLIプロファイル名**: `r2`（ローカルの `~/.aws/credentials` に保存済み）
 
