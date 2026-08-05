@@ -13,7 +13,7 @@
 
 ## 🔗 リンク
 
-【もっと詳しく（note）】　準備中
+【もっと詳しく（note）】　https://note.com/uzumaki_inc/n/nbb2d973a7fc2
 
 【登場】
 
