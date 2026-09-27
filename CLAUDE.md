@@ -116,7 +116,7 @@ shownotes.md は次の構成（💡 エピソード概要 / 🔗 リンク / �
 ## 現在の状態
 
 - 配信基盤（GitHub Pages・R2・ドメイン・Spotify・Apple Podcasts）と publish.sh はセットアップ済み
-- 公開済みエピソードは `episodes/` 配下のディレクトリが正（公開日は各 `meta.yaml` の `date`）。次の回は最大番号 +1
+- 公開済みエピソードは push 済み（`origin/main`）の `episodes/` 配下が正（公開日は各 `meta.yaml` の `date`）。ローカルにしか無い回は公開作業の途中なので、次の番号にせず、その回の作業を再開するか編集者に確認する
 
 ---
 
