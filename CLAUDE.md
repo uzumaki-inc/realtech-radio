@@ -82,22 +82,22 @@ realtech-radio/              ← GitHub: uzumaki-inc/realtech-radio
 
 詳細は `OPERATION.md` を参照。概要は以下の通り：
 
-1. `./scripts/publish.sh 0007 ~/Downloads/file.m4a ~/Downloads/file.mp4` を実行（動画がない回は mp4 の代わりに `--no-video` を明示。省略はエラーになる）
+1. `./scripts/publish.sh <番号> <m4aファイル> <mp4ファイル>` を実行（動画がない回は mp4 の代わりに `--no-video` を明示。省略はエラーになる）
    - m4aをmp3に変換してR2アップロード → mp4から10秒ごとに静止画切り出し → テンプレート生成（自動）
    - 文字起こしは行わない（共有される話者分離済み VTT を使う）
 2. VTT（＋切り出した静止画）をClaudeに渡して番組概要・ポイント・リンクを生成（Claude+人間）
 3. `meta.yaml` の title / description を記入（手動。duration は publish.sh が自動入力）
 4. `shownotes.md` のクレジット登壇者（工藤以外）を記入（手動）
-5. まとめ後、切り出した静止画をローカルから削除（`rm -rf ~/Downloads/realtech-frames-0007`）
+5. まとめ後、切り出した静止画をローカルから削除（フォルダは m4a と同じ場所の `realtech-frames-<番号>`。publish.sh が最後に表示する `rm -rf` コマンドをそのまま使う）
 6. **編集者が内容を確認して「OK」と言ったら** `git push` → GitHub Actionsが feed.xml を自動更新（⛔ 承認前の push は禁止。上記「Claude への必須ルール」参照）
 
 ### shownotes.md のテンプレート構成
 
-shownotes.md は **ep0007 以降の構成**（💡 エピソード概要 / 🔗 リンク / 🎙 クレジット / 📻 番組概要）で書く。雛形は publish.sh が生成するので、それを埋める。実例は `episodes/0007/shownotes.md` を正とする。
+shownotes.md は次の構成（💡 エピソード概要 / 🔗 リンク / 🎙 クレジット / 📻 番組概要）で書く。雛形は publish.sh が生成するので、それを埋める。実例は `episodes/0007/shownotes.md` を正とする。
 
 ### エピソード番号規則
 - **4桁ゼロ埋め**（例: `0001`, `0002`, `0003`）
-- R2ファイル名: `episodes/0007.mp3`（配信音声は mp3 に統一。Podcast アプリの互換性が最も高いため）
+- R2ファイル名: `episodes/<番号>.mp3`（配信音声は mp3 に統一。Podcast アプリの互換性が最も高いため）
 - 入力（編集者が渡す音声）は `.m4a` のまま。mp3 への変換は publish.sh が自動で行う
 
 ---
@@ -113,22 +113,10 @@ shownotes.md は **ep0007 以降の構成**（💡 エピソード概要 / 🔗 
 
 ---
 
-## 現在の状態（2026-05-22時点）
+## 現在の状態
 
-- [x] GitHub Actions + GitHub Pages セットアップ完了
-- [x] Cloudflare R2 バケット作成・公開設定完了
-- [x] podcast.uzumaki-inc.jp ドメイン設定完了
-- [x] ep0001 音声アップロード・公開完了
-- [x] Spotify 登録完了（審査通過済み）
-- [x] Apple Podcasts 登録・申請完了
-- [x] 運用スクリプト（publish.sh）作成完了
-- [x] ep0002 公開完了（2026-03-28）
-- [x] ep0003 公開完了（2026-04-13、収録日 2026-04-11）
-- [x] ep0004 公開完了（2026-05-11、収録日 2026-04-23）
-- [x] ep0005 公開完了（2026-05-22、収録日 2026-05-18）
-- [x] ep0006 公開完了（2026-06-12、収録日 2026-06-05）
-- [x] ep0007 公開完了（2026-07-16、収録日 2026-07-10）
-- [ ] ep0008 以降のエピソード公開（次回作業）
+- 配信基盤（GitHub Pages・R2・ドメイン・Spotify・Apple Podcasts）と publish.sh はセットアップ済み
+- 公開済みエピソードは push 済み（`origin/main`）の `episodes/` 配下が正（公開日は各 `meta.yaml` の `date`）。ローカルにしか無い回は公開作業の途中なので、次の番号にせず、その回の作業を再開するか編集者に確認する
 
 ---
 
