@@ -24,7 +24,7 @@ Polar　https://www.polar.com/ja
 
 Notion　https://www.notion.com/ja
 
-🎧 関連回：#10 OpenAIのdotsで開発したら、筋トレまで変わった（前編）｜AIと3時間「電話」したらアプリができていた
+🎧 関連回：[#10 OpenAIのdotsで開発したら、筋トレまで変わった（前編）｜AIと3時間「電話」したらアプリができていた](https://open.spotify.com/episode/6Z8BHZsJATD5ueIrjXHiDC)
 
 ## 🎙 クレジット
 
